@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -9,9 +12,7 @@ package chess;
 public class ChessBoard {
 
     ChessPiece[][] squares = new ChessPiece[8][8];
-    public ChessBoard() {
-        
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard
@@ -39,8 +40,99 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
+                squares[i][j] = null;
+            }
+        }
+
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
+                switch(i) {
+                    case 0:
+                        switch (j) {
+                            case 0, 7:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+                                break;
+                            case 1, 6:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+                                break;
+                            case 2, 5:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+                                break;
+                            case 3:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+                                break;
+                            case 4:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+                                break;
+                        }
+                        break;
+                    case 1:
+                        squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+                        break;
+                    case 6:
+                        squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+                        break;
+                    case 7:
+                        switch (j) {
+                            case 0, 7:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+                                break;
+                            case 1, 6:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+                                break;
+                            case 2, 5:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+                                break;
+                            case 3:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+                                break;
+                            case 4:
+                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
     }
 
+    @Override
+    public String toString() {
+        ChessPiece currPiece;
+        StringBuilder s = new StringBuilder("ChessBoard \n");
 
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
+                currPiece = squares[i][j];
+                if (currPiece == null) {
+                    s.append("    [--]    , ");
+                } else {
+                    s.append("[");
+                    s.append(currPiece.getTeamColor());
+                    s.append("-");
+                    s.append(currPiece.getPieceType());
+                    s.append("], ");
+                }
+            }
+            s.append("\n");
+        }
+        s.append("\n");
+        return s.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
+    }
 }
