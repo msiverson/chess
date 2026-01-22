@@ -40,61 +40,26 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (int i = 0; i < squares.length; i++) {
-            for (int j = 0; j < squares[i].length; j++) {
-                squares[i][j] = null;
-            }
+        ChessPiece.PieceType[] backRank = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK
+        };
+
+        for (ChessPiece[] square : squares) {
+            Arrays.fill(square, null);
         }
 
         for (int i = 0; i < squares.length; i++) {
-            for (int j = 0; j < squares[i].length; j++) {
-                switch(i) {
-                    case 0:
-                        switch (j) {
-                            case 0, 7:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-                                break;
-                            case 1, 6:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-                                break;
-                            case 2, 5:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-                                break;
-                            case 3:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-                                break;
-                            case 4:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-                                break;
-                        }
-                        break;
-                    case 1:
-                        squares[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-                        break;
-                    case 6:
-                        squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-                        break;
-                    case 7:
-                        switch (j) {
-                            case 0, 7:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-                                break;
-                            case 1, 6:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-                                break;
-                            case 2, 5:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-                                break;
-                            case 3:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-                                break;
-                            case 4:
-                                squares[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-                                break;
-                        }
-                        break;
-                }
-            }
+            squares[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, backRank[i]);
+            squares[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            squares[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            squares[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, backRank[i]);
         }
     }
 
@@ -103,9 +68,9 @@ public class ChessBoard {
         ChessPiece currPiece;
         StringBuilder s = new StringBuilder("ChessBoard \n");
 
-        for (int i = 0; i < squares.length; i++) {
-            for (int j = 0; j < squares[i].length; j++) {
-                currPiece = squares[i][j];
+        for (ChessPiece[] square : squares) {
+            for (ChessPiece chessPiece : square) {
+                currPiece = chessPiece;
                 if (currPiece == null) {
                     s.append("    [--]    , ");
                 } else {
