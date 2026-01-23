@@ -21,35 +21,43 @@ public interface PieceMovesCalculator {
 final class KingMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return MajorMovesCalculator.calculateMoves(board, position, 1);
+        int[][] kingDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
+                                    { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
+        return MajorMovesCalculator.calculateMoves(board, position, 1, kingDirections);
     }
 }
 
 final class QueenMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return MajorMovesCalculator.calculateMoves(board, position, 8);
+        int[][] queenDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
+                                    { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
+        return MajorMovesCalculator.calculateMoves(board, position, 8, queenDirections);
     }
 }
 
 final class BishopMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return MajorMovesCalculator.calculateMoves(board, position, 8);
+        int[][] bishopDirections = {{ 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
+        return MajorMovesCalculator.calculateMoves(board, position, 8, bishopDirections);
     }
 }
 
 final class KnightMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return MajorMovesCalculator.calculateMoves(board, position, 1);
+        int[][] knightDirections = {{ 2, -1 }, { 2, 1 }, { 1, 2 }, { -1, 2 },
+                                    { -2, 1 }, { -2, -1 }, { -1, -2 }, { 1, -2 }};
+        return MajorMovesCalculator.calculateMoves(board, position, 1, knightDirections);
     }
 }
 
 final class RookMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return MajorMovesCalculator.calculateMoves(board, position, 8);
+        int[][] rookDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }};
+        return MajorMovesCalculator.calculateMoves(board, position, 8, rookDirections);
     }
 }
 
@@ -78,23 +86,10 @@ class MoveCheck {
 }
 
 class MajorMovesCalculator {
-    private static final int[][] R_DIRS = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }};
-    private static final int[][] B_DIRS = {{ 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
-    private static final int[][] K_Q_DIRS = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
-                                                { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
-    private static final int[][] K_DIRS = {{ 2, -1 }, { 2, 1 }, { 1, 2 }, { -1, 2 },
-                                                { -2, 1 }, { -2, -1 }, { -1, -2 }, { 1, -2 }};
-
-    static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, int maxSteps) {
+    static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, int maxSteps, int[][] direct) {
         Collection<ChessMove> moves = new ArrayList<>();
-        int [][] directions = new int[0][];
-        switch (board.getPiece(position).getPieceType()) {
-            case KING, QUEEN -> directions = K_Q_DIRS;
-            case BISHOP -> directions = B_DIRS;
-            case ROOK -> directions = R_DIRS;
-            case KNIGHT -> directions = K_DIRS;
-        }
-        for (int[] d : directions) {
+
+        for (int[] d : direct) {
             int currR = d[0], currC = d[1];
             for (int step = 1; step <= maxSteps; step++) {
                 ChessPosition currMove = new ChessPosition(
