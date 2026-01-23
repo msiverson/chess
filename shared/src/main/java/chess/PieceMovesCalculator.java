@@ -21,35 +21,35 @@ public interface PieceMovesCalculator {
 final class KingMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return SlideMovesCalculator.calculateSlides(board, position, 1);
+        return MajorMovesCalculator.calculateMoves(board, position, 1);
     }
 }
 
 final class QueenMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return SlideMovesCalculator.calculateSlides(board, position, 8);
+        return MajorMovesCalculator.calculateMoves(board, position, 8);
     }
 }
 
 final class BishopMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return SlideMovesCalculator.calculateSlides(board, position, 8);
-    }
-}
-
-final class RookMovesCalculator implements PieceMovesCalculator {
-    @Override
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return SlideMovesCalculator.calculateSlides(board, position, 8);
+        return MajorMovesCalculator.calculateMoves(board, position, 8);
     }
 }
 
 final class KnightMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return MajorMovesCalculator.calculateMoves(board, position, 1);
+    }
+}
+
+final class RookMovesCalculator implements PieceMovesCalculator {
+    @Override
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        return MajorMovesCalculator.calculateMoves(board, position, 8);
     }
 }
 
@@ -77,19 +77,22 @@ class MoveCheck {
     }
 }
 
-class SlideMovesCalculator {
+class MajorMovesCalculator {
     private static final int[][] R_DIRS = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }};
     private static final int[][] B_DIRS = {{ 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
     private static final int[][] K_Q_DIRS = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
                                                 { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
+    private static final int[][] K_DIRS = {{ 2, -1 }, { 2, 1 }, { 1, 2 }, { -1, 2 },
+                                                { -2, 1 }, { -2, -1 }, { -1, -2 }, { 1, -2 }};
 
-    static Collection<ChessMove> calculateSlides(ChessBoard board, ChessPosition position, int maxSteps) {
+    static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, int maxSteps) {
         Collection<ChessMove> moves = new ArrayList<>();
         int [][] directions = new int[0][];
         switch (board.getPiece(position).getPieceType()) {
             case KING, QUEEN -> directions = K_Q_DIRS;
             case BISHOP -> directions = B_DIRS;
             case ROOK -> directions = R_DIRS;
+            case KNIGHT -> directions = K_DIRS;
         }
         for (int[] d : directions) {
             int currR = d[0], currC = d[1];
