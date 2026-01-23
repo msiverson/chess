@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public interface PieceMovesCalculator {
@@ -20,21 +21,28 @@ public interface PieceMovesCalculator {
 final class KingMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return SlideMovesCalculator.calculateSlides(board, position, 1);
     }
 }
 
 final class QueenMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return SlideMovesCalculator.calculateSlides(board, position, 8);
     }
 }
 
 final class BishopMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return SlideMovesCalculator.calculateSlides(board, position, 8);
+    }
+}
+
+final class RookMovesCalculator implements PieceMovesCalculator {
+    @Override
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        return SlideMovesCalculator.calculateSlides(board, position, 8);
     }
 }
 
@@ -45,16 +53,53 @@ final class KnightMovesCalculator implements PieceMovesCalculator {
     }
 }
 
-final class RookMovesCalculator implements PieceMovesCalculator {
+final class PawnMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         throw new RuntimeException("Not implemented");
     }
 }
 
-final class PawnMovesCalculator implements PieceMovesCalculator {
-    @Override
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+class MoveCheck {
+    static boolean moveChecker(
+            Collection<ChessMove> moves, ChessBoard board, ChessPosition piecePosition, ChessPosition positionToCheck) {
+        if ((positionToCheck.getColumn() <= 8 && positionToCheck.getColumn() >= 1) &&
+                (positionToCheck.getRow() <= 8 && positionToCheck.getRow() >= 1)) {
+            if (board.getPiece(positionToCheck) == null) {
+                ChessMove newMove = new ChessMove(piecePosition, positionToCheck, null);
+                return moves.add(newMove);
+            } else if (board.getPiece(piecePosition).getTeamColor() != board.getPiece(positionToCheck).getTeamColor()) {
+                ChessMove newMove = new ChessMove(piecePosition, positionToCheck, null);
+                return !moves.add(newMove);
+            }
+        }
+        return false;
+    }
+}
+
+class SlideMovesCalculator {
+    private static final int[][] R_DIRS = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }};
+    private static final int[][] B_DIRS = {{ 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
+    private static final int[][] K_Q_DIRS = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
+                                                { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
+
+    static Collection<ChessMove> calculateSlides(ChessBoard board, ChessPosition position, int maxSteps) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int [][] directions = new int[0][];
+        switch (board.getPiece(position).getPieceType()) {
+            case KING, QUEEN -> directions = K_Q_DIRS;
+            case BISHOP -> directions = B_DIRS;
+            case ROOK -> directions = R_DIRS;
+        }
+        for (int[] d : directions) {
+            int currR = d[0], currC = d[1];
+            for (int step = 1; step <= maxSteps; step++) {
+                ChessPosition currMove = new ChessPosition(
+                        position.getRow()+(currR*step), position.getColumn()+(currC*step));
+                boolean continueDirection = MoveCheck.moveChecker(moves, board, position, currMove);
+                if (!continueDirection) break;
+            }
+        }
+        return moves;
     }
 }
