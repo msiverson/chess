@@ -23,7 +23,7 @@ final class KingMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         int[][] kingDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
                                     { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
-        return MajorMovesCalculator.calculateMajorMoves(board, position, 1, kingDirections);
+        return CalculateMoves.calculateMoves(board, position, 1, kingDirections);
     }
 }
 
@@ -32,7 +32,7 @@ final class QueenMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         int[][] queenDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
                                     { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
-        return MajorMovesCalculator.calculateMajorMoves(board, position, 8, queenDirections);
+        return CalculateMoves.calculateMoves(board, position, 8, queenDirections);
     }
 }
 
@@ -40,7 +40,7 @@ final class BishopMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         int[][] bishopDirections = {{ 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }};
-        return MajorMovesCalculator.calculateMajorMoves(board, position, 8, bishopDirections);
+        return CalculateMoves.calculateMoves(board, position, 8, bishopDirections);
     }
 }
 
@@ -49,7 +49,7 @@ final class KnightMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         int[][] knightDirections = {{ 2, -1 }, { 2, 1 }, { 1, 2 }, { -1, 2 },
                                     { -2, 1 }, { -2, -1 }, { -1, -2 }, { 1, -2 }};
-        return MajorMovesCalculator.calculateMajorMoves(board, position, 1, knightDirections);
+        return CalculateMoves.calculateMoves(board, position, 1, knightDirections);
     }
 }
 
@@ -57,7 +57,7 @@ final class RookMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         int[][] rookDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }};
-        return MajorMovesCalculator.calculateMajorMoves(board, position, 8, rookDirections);
+        return CalculateMoves.calculateMoves(board, position, 8, rookDirections);
     }
 }
 
@@ -65,25 +65,25 @@ final class PawnMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         int[][] whitePawnDirections = {{1,0}};
-        int[][] whitePawnBlocked = {{1,-1}, {1,1}};
+        int[][] whitePawnCapture = {{1,-1}, {1,1}};
         int[][] blackPawnDirections = {{-1,0}};
-        int[][] blackPawnBlocked = {{-1,-1}, {-1,1}};
+        int[][] blackPawnCapture = {{-1,-1}, {-1,1}};
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPiece currPiece = board.getPiece(position);
         if (currPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             if (position.getRow() == 2) {
-                moves = MajorMovesCalculator.calculateMajorMoves(board, position, 2, whitePawnDirections);
+                moves = CalculateMoves.calculateMoves(board, position, 2, whitePawnDirections);
             } else {
-                moves = MajorMovesCalculator.calculateMajorMoves(board, position, 1, whitePawnDirections);
+                moves = CalculateMoves.calculateMoves(board, position, 1, whitePawnDirections);
             }
-            moves.addAll(MajorMovesCalculator.calculateMajorMoves(board, position, 1, whitePawnBlocked));
+            moves.addAll(CalculateMoves.calculateMoves(board, position, 1, whitePawnCapture));
         } else if (currPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             if (position.getRow() == 7) {
-                moves = MajorMovesCalculator.calculateMajorMoves(board, position, 2, blackPawnDirections);
+                moves = CalculateMoves.calculateMoves(board, position, 2, blackPawnDirections);
             } else {
-                moves = MajorMovesCalculator.calculateMajorMoves(board, position, 1, blackPawnDirections);
+                moves = CalculateMoves.calculateMoves(board, position, 1, blackPawnDirections);
             }
-            moves.addAll(MajorMovesCalculator.calculateMajorMoves(board, position, 1, blackPawnBlocked));
+            moves.addAll(CalculateMoves.calculateMoves(board, position, 1, blackPawnCapture));
         }
         return moves;
     }
@@ -145,8 +145,8 @@ class MoveCheck {
     }
 }
 
-class MajorMovesCalculator {
-    static Collection<ChessMove> calculateMajorMoves(
+class CalculateMoves {
+    static Collection<ChessMove> calculateMoves(
             ChessBoard board, ChessPosition position, int maxSteps, int[][] direct) {
         Collection<ChessMove> moves = new ArrayList<>();
 
