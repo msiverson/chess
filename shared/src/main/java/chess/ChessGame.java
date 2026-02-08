@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -10,19 +11,19 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor teamTurn;
+    private TeamColor currentTeamTurn;
     private ChessBoard gameBoard = new ChessBoard();
 
     public ChessGame() {
         gameBoard.resetBoard();
-        teamTurn = TeamColor.WHITE;
+        currentTeamTurn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return teamTurn;
+        return currentTeamTurn;
     }
 
     /**
@@ -31,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        teamTurn = team;
+        currentTeamTurn = team;
     }
 
     /**
@@ -53,21 +54,10 @@ public class ChessGame {
         ChessPiece currPiece = gameBoard.getPiece(startPosition);
         if (currPiece == null) {
             return null;
-        } else {
-            Collection<ChessMove> movesToCheck = currPiece.pieceMoves(gameBoard, startPosition);
-            ChessBoard testBoard = new ChessBoard();
-            for (int i = 0; i < movesToCheck.size(); i++) {
-                testBoard = gameBoard;
-
-            }
-
-                // King Check Checker
-//                // Update a test board with each of the moves
-//                    // For each move, run "isInCheck" method
-//                        // If true, discard move
-//                        // If false, do nothing
         }
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> movesToCheck = currPiece.pieceMoves(gameBoard, startPosition);
+        movesToCheck.removeIf(move -> isInCheck(gameBoard.getPiece(startPosition).getTeamColor()));
+        return movesToCheck;
     }
 
     /**
@@ -77,7 +67,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (gameBoard.getPiece(move.getStartPosition()).getTeamColor() != teamTurn) {
+        if (gameBoard.getPiece(move.getStartPosition()).getTeamColor() != currentTeamTurn) {
 
         }
     }
@@ -102,7 +92,6 @@ public class ChessGame {
                 }
             }
         }
-
 
         int[][] cardinalDirections = {{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }};
         ChessPiece.PieceType[] cardinalTypes = {
@@ -149,9 +138,6 @@ public class ChessGame {
             }
         }
         return false;
-
-
-
     }
 
     private boolean checkFromDirection(ChessPosition kingPosition, int[][]directions, int maxSteps,
@@ -233,19 +219,20 @@ public class ChessGame {
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return teamTurn == chessGame.teamTurn && Objects.equals(gameBoard, chessGame.gameBoard);
+        return currentTeamTurn == chessGame.currentTeamTurn && Objects.equals(gameBoard, chessGame.gameBoard);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamTurn, gameBoard);
+        return Objects.hash(currentTeamTurn, gameBoard);
     }
 
     @Override
     public String toString() {
-        return "ChessGame{" +
-                "teamTurn=" + teamTurn +
-                ", gameBoard=" + gameBoard +
+
+        return "\nChessGame" +
+                "currentTeamTurn = " + currentTeamTurn +
+                ",\ngameBoard=" + gameBoard +
                 '}';
     }
 }
