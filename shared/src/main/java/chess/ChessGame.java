@@ -176,6 +176,7 @@ public class ChessGame {
     private boolean checkFromDirection(ChessPosition kingPosition, int[][]directions, int maxSteps,
                                        ChessPiece.PieceType[] pieceTypes) {
         ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
+        ChessGame.TeamColor kingPieceColor = kingPiece.getTeamColor();
         for (int[] d : directions) {
             int currR = d[0], currC = d[1];
             for (int step = 1; step <= maxSteps; step++) {
@@ -185,16 +186,25 @@ public class ChessGame {
                         (currPosition.getRow() <= 8 && currPosition.getRow() >= 1)) {
                     ChessPiece currPiece = gameBoard.getPiece(currPosition);
                     if (currPiece != null) {
-                        if (currPiece.getTeamColor() != kingPiece.getTeamColor()) {
+                        ChessGame.TeamColor currPieceColor = currPiece.getTeamColor();
+                        ChessPiece.PieceType currPieceType = currPiece.getPieceType();
+                        if (currPieceColor == kingPieceColor) {
+                            break; // Piece from team blocks direction. Continue to next direction.
+                        } else {
                             for (ChessPiece.PieceType currType : pieceTypes) {
-                                if (currType == ChessPiece.PieceType.PAWN && step == 1) {
-                                    if (kingPiece.getTeamColor() == TeamColor.WHITE && currR > 0) {
-                                        return true;
-                                    } else if (kingPiece.getTeamColor() == TeamColor.BLACK && currR < 0) {
+                                if (step == 1) {
+                                    if (currType == ChessPiece.PieceType.PAWN && currType == currPieceType) {
+                                        if (kingPieceColor == TeamColor.WHITE && currR > 0) {
+                                            return true;
+                                        } else if (kingPieceColor == TeamColor.BLACK && currR < 0) {
+                                            return true;
+                                        }
+                                    }
+                                    if (currType == ChessPiece.PieceType.KING && currType == currPieceType) {
                                         return true;
                                     }
-                                } else if (currPiece.getPieceType() == currType &&
-                                        currType != ChessPiece.PieceType.PAWN) {
+                                } if (currPiece.getPieceType() == currType && currType != ChessPiece.PieceType.PAWN
+                                        && currType != ChessPiece.PieceType.KING) {
                                     return true;
                                 }
                             }
