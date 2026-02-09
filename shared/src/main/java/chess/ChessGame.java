@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -55,9 +56,36 @@ public class ChessGame {
         if (currPiece == null) {
             return null;
         }
-        Collection<ChessMove> movesToCheck = currPiece.pieceMoves(gameBoard, startPosition);
-        movesToCheck.removeIf(move -> isInCheck(gameBoard.getPiece(startPosition).getTeamColor()));
-        return movesToCheck;
+
+        Collection<ChessMove> moves = currPiece.pieceMoves(gameBoard, startPosition);
+        Iterator<ChessMove> movesToCheck = moves.iterator();
+        while (movesToCheck.hasNext()) {
+            ChessMove currMove = movesToCheck.next();
+            ChessPosition endPosition = currMove.getEndPosition();
+            ChessPiece.PieceType promotionPieceType = currMove.getPromotionPiece();
+
+            // Make the test move
+            // Remove piece from start position
+            gameBoard.addPiece(startPosition, null);
+            // Add piece to move end position
+            ChessPiece endPiece = gameBoard.getPiece(endPosition);
+            if (promotionPieceType != null) {
+                ChessPiece promotionPiece = new ChessPiece(currPiece.getTeamColor(), promotionPieceType);
+                gameBoard.addPiece(endPosition, promotionPiece);
+            } else {
+                gameBoard.addPiece(endPosition, currPiece);
+            }
+
+            if (isInCheck(currPiece.getTeamColor())) {
+                movesToCheck.remove();
+            }
+
+            // Undo test move
+            gameBoard.addPiece(startPosition, currPiece);
+            gameBoard.addPiece(endPosition, endPiece);
+
+        }
+        return moves;
     }
 
     /**
@@ -67,9 +95,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (gameBoard.getPiece(move.getStartPosition()).getTeamColor() != currentTeamTurn) {
-
-        }
+//        if (gameBoard.getPiece(move.getStartPosition()).getTeamColor() != currentTeamTurn) {
+//
+//        }
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -85,10 +114,12 @@ public class ChessGame {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition currPosition = new ChessPosition(i, j);
-                if (gameBoard.getPiece(currPosition).getPieceType() == ChessPiece.PieceType.KING &&
-                        gameBoard.getPiece(currPosition).getTeamColor() == teamColor) {
-                    kingPosition = currPosition;
-                    break FindKing;
+                if (gameBoard.getPiece(currPosition) != null) {
+                    if (gameBoard.getPiece(currPosition).getPieceType() == ChessPiece.PieceType.KING &&
+                            gameBoard.getPiece(currPosition).getTeamColor() == teamColor) {
+                        kingPosition = currPosition;
+                        break FindKing;
+                    }
                 }
             }
         }
@@ -123,16 +154,18 @@ public class ChessGame {
         ChessPiece.PieceType[][] typeSet = {
             cardinalTypes,
             diagonalTypes,
+            diagonalTypes,
             knightType
         };
-
         for (int i = 0; i < 4; i++) {
             if (typeSet[i][0] == ChessPiece.PieceType.KNIGHT) {
                 if (checkFromDirection(kingPosition, directionSet[i], 1, typeSet[i])) {
+                    System.out.println("Move Removed");
                     return true;
                 }
             } else {
                 if (checkFromDirection(kingPosition, directionSet[i], 8, typeSet[i])) {
+                    System.out.println("Move Removed");
                     return true;
                 }
             }
@@ -171,7 +204,6 @@ public class ChessGame {
             }
         }
         return false;
-
     }
 
     /**
