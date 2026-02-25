@@ -4,19 +4,10 @@ import io.javalin.*;
 
 public class Server {
 
-    public static void main(String[] args) {
-        new Server().run();
-    }
+    private final Javalin javalin;
 
-    private void run() {
-        final Javalin javalin;
+    public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-
-        javalin.delete("/db",)
-        javalin.post("/user")
-                .get()
-                .delete()
-                .put()
 
         // Register your endpoints and exception handlers here.
 
