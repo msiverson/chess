@@ -1,33 +1,12 @@
 package server;
 
-import io.javalin.*;
+import chess.*;
 
-public class Server {
-
+public class ServerMain {
     public static void main(String[] args) {
-        new Server().run();
-    }
+        Server server = new Server();
+        server.run(8080);
 
-    private void run() {
-        final Javalin javalin;
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
-
-        javalin.delete("/db",)
-        javalin.post("/user")
-                .get()
-                .delete()
-                .put()
-
-        // Register your endpoints and exception handlers here.
-
-    }
-
-    public int run(int desiredPort) {
-        javalin.start(desiredPort);
-        return javalin.port();
-    }
-
-    public void stop() {
-        javalin.stop();
+        System.out.println("♕ 240 Chess Server");
     }
 }
