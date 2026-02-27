@@ -4,6 +4,7 @@ import dto.*;
 import dto.CreateGameRequest;
 import dto.CreateGameResult;
 import dto.JoinGameRequest;
+import dto.ListGamesRequest;
 import dto.ListGamesResult;
 import io.javalin.http.Context;
 import service.GameService;
@@ -16,9 +17,9 @@ public class GameHandler {
 
     public void listGames(Context ctx) {
         try {
-            String token = ctx.header("authorization");
-            ListGamesResult result = service.listGames(token);
-
+            String authToken = ctx.header("authorization");
+            ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
+            ListGamesResult result = service.listGames(listGamesRequest);
             ctx.status(200).json(result);
 
         } catch (UnauthorizedException e) {
@@ -31,7 +32,8 @@ public class GameHandler {
     public void createGame(Context ctx) {
         try {
             String token = ctx.header("authorization");
-            CreateGameRequest req = ctx.bodyAsClass(CreateGameRequest.class);
+            String req = ctx.bodyAsClass(CreateGameRequest.class);
+
 
             CreateGameResult result = service.createGame(req, token);
 

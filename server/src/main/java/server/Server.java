@@ -25,15 +25,15 @@ public class Server {
         SessionHandler sessionHandler = new SessionHandler();
         UserHandler userHandler = new UserHandler();
 
-        javalin.delete("/db", dbHandler::clear);
+        //javalin.delete("/db", dbHandler::clear);
 
         javalin.post("/user", userHandler::register);
-        javalin.post("/session", sessionHandler::login);
-        javalin.delete("/session", sessionHandler::logout);
-
-        javalin.get("/game", gameHandler::listGames);
-        javalin.post("/game", gameHandler::createGame);
-        javalin.put("/game", gameHandler::joinGame);
+//        javalin.post("/session", sessionHandler::login);
+//        javalin.delete("/session", sessionHandler::logout);
+//
+//        javalin.get("/game", gameHandler::listGames);
+//        javalin.post("/game", gameHandler::createGame);
+//        javalin.put("/game", gameHandler::joinGame);
     }
 
     public int run(int desiredPort) {
