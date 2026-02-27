@@ -1,6 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
+import handler.DBHandler;
+import handler.GameHandler;
+import handler.SessionHandler;
+import handler.UserHandler;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -16,12 +20,20 @@ public class Server {
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        // Clear application
-        javalin.delete("/db", context -> deleteName(context));
-        // Register user
-        javalin.post("/user", )
-        //
+        DBHandler dbHandler = new DBHandler();
+        GameHandler gameHandler = new GameHandler();
+        SessionHandler sessionHandler = new SessionHandler();
+        UserHandler userHandler = new UserHandler();
 
+        javalin.delete("/db", dbHandler::clear);
+
+        javalin.post("/user", userHandler::register);
+        javalin.post("/session", sessionHandler::login);
+        javalin.delete("/session", sessionHandler::logout);
+
+        javalin.get("/game", gameHandler::listGames);
+        javalin.post("/game", gameHandler::createGame);
+        javalin.put("/game", gameHandler::joinGame);
     }
 
     public int run(int desiredPort) {
@@ -32,13 +44,6 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-
-    private void deleteName(Context ctx) {
-
-    }
-
-
-
 
     private boolean authorized(Context ctx) {
         String authToken = ctx.header("authorization");
