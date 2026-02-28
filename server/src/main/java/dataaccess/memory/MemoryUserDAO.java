@@ -3,6 +3,7 @@ package dataaccess.memory;
 import java.util.HashMap;
 import java.util.Map;
 
+import dataaccess.AlreadyExistsException;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.UserData;
@@ -12,34 +13,22 @@ public class MemoryUserDAO implements UserDAO {
 
     // username
     @Override
-    public String getUser() throws DataAccessException {
-        return "";
+    public UserData getUser(String username) throws DataAccessException {
+        return userDataDB.get(username);
     }
 
     @Override
-    public void addUser(String username) {
-
-    }
-
-    // password
-    @Override
-    public String getPass() throws DataAccessException {
-        return "";
+    public void addUser(UserData userData) throws DataAccessException {
+        if (userDataDB.containsKey(userData.username())) {
+            throw new AlreadyExistsException("User exists");
+        }
+        userDataDB.put(userData.username(), userData);
     }
 
     @Override
-    public void addPass(String password) {
+    public void clear() throws DataAccessException {
 
     }
 
-    // email
-    @Override
-    public String getEmail() throws DataAccessException {
-        return "";
-    }
 
-    @Override
-    public void addEmail(String email) {
-
-    }
 }
