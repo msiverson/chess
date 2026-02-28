@@ -12,6 +12,7 @@ import dto.game.ListGamesRequest;
 import dto.game.ListGamesResult;
 
 import service.GameService;
+import service.exceptions.UnauthorizedException;
 
 public class GameHandler {
 

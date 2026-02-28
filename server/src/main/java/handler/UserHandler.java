@@ -5,11 +5,12 @@ import java.util.Map;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
 
-import dataaccess.AlreadyExistsException;
-import service.ServiceException;
 import dto.user.RegisterRequest;
 import dto.user.RegisterResult;
 import service.UserService;
+// Exceptions
+import service.exceptions.AlreadyExistsException;
+import service.exceptions.ServiceException;
 
 public class UserHandler {
 

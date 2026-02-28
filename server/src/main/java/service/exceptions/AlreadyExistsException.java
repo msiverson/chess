@@ -1,4 +1,4 @@
-package dataaccess;
+package service.exceptions;
 
 public class AlreadyExistsException extends RuntimeException {
     public AlreadyExistsException(String message) {

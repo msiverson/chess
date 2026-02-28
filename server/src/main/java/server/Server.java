@@ -1,23 +1,23 @@
 package server;
 
-import dataaccess.AuthDAO;
-import dataaccess.memory.MemoryAuthDAO;
 import io.javalin.Javalin;
 
 // DB imports
 import handler.DBHandler;
-
-// User imports
+// User Path imports
 import handler.UserHandler;
 import service.UserService;
+// Session Path imports
+import handler.SessionHandler;
+import service.SessionService;
+// Game Path imports
+import handler.GameHandler;
+
+// Dataaccess
+import dataaccess.AuthDAO;
+import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.UserDAO;
 import dataaccess.memory.MemoryUserDAO;
-
-// Session imports
-import handler.SessionHandler;
-
-// Game imports
-import handler.GameHandler;
 
 public class Server {
 
@@ -41,10 +41,10 @@ public class Server {
         javalin.post("/user", userHandler::register);
 
         // Session endpoints
-//        Service
-//        SessionHandler sessionHandler = new SessionHandler();
-//        javalin.post("/session", sessionHandler::login);
-//        javalin.delete("/session", sessionHandler::logout);
+        SessionService sessionService = new SessionService(userDAO, authDAO);
+        SessionHandler sessionHandler = new SessionHandler(sessionService);
+        javalin.post("/session", sessionHandler::login);
+        javalin.delete("/session", sessionHandler::logout);
 
 
         // Game endpoints

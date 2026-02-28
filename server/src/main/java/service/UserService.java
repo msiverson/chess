@@ -3,16 +3,18 @@ package service;
 import java.util.UUID;
 
 // Auth
-import dataaccess.AlreadyExistsException;
 import dataaccess.AuthDAO;
-
+import model.AuthData;
 // User
-import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import model.UserData;
+// Exceptions
+import dataaccess.DataAccessException;
+// DTO
 import dto.user.RegisterRequest;
 import dto.user.RegisterResult;
-import model.AuthData;
-import model.UserData;
+import service.exceptions.AlreadyExistsException;
+import service.exceptions.ServiceException;
 
 public class UserService {
 

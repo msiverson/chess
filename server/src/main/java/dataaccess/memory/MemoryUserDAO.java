@@ -10,7 +10,6 @@ import model.UserData;
 public class MemoryUserDAO implements UserDAO {
     private final Map<String, UserData> userDataDB = new HashMap<>();
 
-    // username
     @Override
     public UserData getUser(String username) throws DataAccessException {
         return userDataDB.get(username);
