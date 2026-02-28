@@ -1,21 +1,16 @@
 package server;
 
-import com.google.gson.Gson;
+import io.javalin.Javalin;
+
 import handler.DBHandler;
 import handler.GameHandler;
 import handler.SessionHandler;
 import handler.UserHandler;
-import io.javalin.Javalin;
-import io.javalin.http.Context;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class Server {
 
     private final Javalin javalin;
-    private final HashSet<String> validTokens = new HashSet<>(Set.of("secret1", "secret2"));
+//    private final HashSet<String> validTokens = new HashSet<>(Set.of("secret1", "secret2"));
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -25,7 +20,7 @@ public class Server {
         SessionHandler sessionHandler = new SessionHandler();
         UserHandler userHandler = new UserHandler();
 
-        //javalin.delete("/db", dbHandler::clear);
+//        javalin.delete("/db", dbHandler::clear);
 
         javalin.post("/user", userHandler::register);
 //        javalin.post("/session", sessionHandler::login);
@@ -45,14 +40,14 @@ public class Server {
         javalin.stop();
     }
 
-    private boolean authorized(Context ctx) {
-        String authToken = ctx.header("authorization");
-        if (!validTokens.contains(authToken)) {
-            ctx.contentType("application/json");
-            ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("msg", "invalid authorization")));
-            return false;
-        }
-        return true;
-    }
+//    private boolean authorized(Context ctx) {
+//        String authToken = ctx.header("authorization");
+//        if (!validTokens.contains(authToken)) {
+//            ctx.contentType("application/json");
+//            ctx.status(401);
+//            ctx.result(new Gson().toJson(Map.of("msg", "invalid authorization")));
+//            return false;
+//        }
+//        return true;
+//    }
 }

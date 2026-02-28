@@ -1,15 +1,17 @@
 package handler;
 
-import dto.*;
-import dto.CreateGameRequest;
-import dto.CreateGameResult;
-import dto.JoinGameRequest;
-import dto.ListGamesRequest;
-import dto.ListGamesResult;
-import io.javalin.http.Context;
-import service.GameService;
-
 import java.util.Map;
+
+import io.javalin.http.Context;
+
+import dto.*;
+import dto.game.CreateGameRequest;
+import dto.game.CreateGameResult;
+import dto.game.JoinGameRequest;
+import dto.game.ListGamesRequest;
+import dto.game.ListGamesResult;
+
+import service.GameService;
 
 public class GameHandler {
 

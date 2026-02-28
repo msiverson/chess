@@ -1,30 +1,38 @@
 package handler;
 
-import dto.*;
-import dto.RegisterRequest;
-import dto.RegisterResult;
-import io.javalin.http.Context;
-import service.UserService;
-
 import java.util.Map;
+
+import io.javalin.http.Context;
+import com.google.gson.Gson;
+
+import dto.*;
+import dto.user.RegisterRequest;
+import dto.user.RegisterResult;
+import service.UserService;
 
 public class UserHandler {
 
     private final UserService service = new UserService();
+    private final Gson gson = new Gson();
 
     public void register(Context ctx) {
         try {
-            RegisterRequest req = ctx.bodyAsClass(RegisterRequest.class);
-            RegisterResult result = service.register(req);
+            // Extract body into RegisterRequest
+            RegisterRequest registerRequest =  gson.fromJson(ctx.body(), RegisterRequest.class);
+            RegisterResult result = service.register(registerRequest);
 
-            ctx.status(200).json(result);
+            ctx.status(200);
+            ctx.result(gson.toJson(result));
 
         } catch (IllegalArgumentException e) {
-            ctx.status(400).json(Map.of("message", "Error: bad request"));
+            ctx.status(400);
+            ctx.result(gson.toJson(Map.of("message", "Error: bad request")));
         } catch (AlreadyExistsException e) {
-            ctx.status(403).json(Map.of("message", "Error: already taken"));
+            ctx.status(403);
+            ctx.result(gson.toJson(Map.of("message", "Error: already taken")));
         } catch (Exception e) {
-            ctx.status(500).json(Map.of("message", "Error: " + e.getMessage()));
+            ctx.status(500);
+            ctx.result(gson.toJson(Map.of("message", "Error: already taken")));
         }
     }
 }

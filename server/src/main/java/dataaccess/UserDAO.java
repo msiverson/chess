@@ -1,5 +1,4 @@
 package dataaccess;
-import model.UserData;
 
 public interface UserDAO {
     // username
@@ -13,37 +12,4 @@ public interface UserDAO {
     // email
     public String getEmail() throws DataAccessException;
     public void addEmail(String email);
-}
-
-class MemoryUserDAO implements UserDAO {
-
-    @Override
-    public String getUser() throws DataAccessException {
-        return "";
-    }
-
-    @Override
-    public void addUser(String username) {
-
-    }
-
-    @Override
-    public String getPass() throws DataAccessException {
-        return "";
-    }
-
-    @Override
-    public void addPass(String password) {
-
-    }
-
-    @Override
-    public String getEmail() throws DataAccessException {
-        return "";
-    }
-
-    @Override
-    public void addEmail(String email) {
-
-    }
 }

@@ -1,11 +1,10 @@
 package service;
 
-import dto.CreateGameRequest;
-import dto.CreateGameResult;
-import dto.JoinGameRequest;
-import dto.JoinGameResult;
-import dto.ListGamesRequest;
-import dto.ListGamesResult;
+import dto.game.CreateGameRequest;
+import dto.game.CreateGameResult;
+import dto.game.JoinGameRequest;
+import dto.game.ListGamesRequest;
+import dto.game.ListGamesResult;
 
 public class GameService {
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) {
@@ -14,7 +13,7 @@ public class GameService {
     public CreateGameResult createGame(CreateGameRequest createGameRequest) {
 
     }
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) {
+    public void joinGame(JoinGameRequest joinGameRequest) {
 
     }
 }
