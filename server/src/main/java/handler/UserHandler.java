@@ -2,13 +2,13 @@ package handler;
 
 import java.util.Map;
 
-import dataaccess.AlreadyExistsException;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
 
+import dataaccess.AlreadyExistsException;
+import service.ServiceException;
 import dto.user.RegisterRequest;
 import dto.user.RegisterResult;
-import service.ServiceException;
 import service.UserService;
 
 public class UserHandler {
