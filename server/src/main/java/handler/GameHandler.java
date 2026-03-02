@@ -3,13 +3,10 @@ package handler;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dto.game.*;
 import io.javalin.http.Context;
-
-import dto.game.CreateGameRequest;
-import dto.game.CreateGameResult;
-import dto.game.JoinGameRequest;
-import dto.game.ListGamesRequest;
-import dto.game.ListGamesResult;
 
 import service.GameService;
 import service.exceptions.AlreadyTakenException;
@@ -27,52 +24,75 @@ public class GameHandler {
     public void listGames(Context ctx) {
         try {
             String authToken = ctx.header("authorization");
-            ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
-            ListGamesResult result = service.listGames(listGamesRequest);
-            ctx.status(200).json(result);
+
+            ListGamesResult result = service.listGames(new ListGamesRequest(authToken));
+
+            ctx.status(200);
+            ctx.result(gson.toJson(result));
 
         } catch (UnauthorizedException e) {
-            ctx.status(401).json(Map.of("message", "Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(Map.of("message", "Error: unauthorized")));
         } catch (Exception e) {
-            ctx.status(500).json(Map.of("message", "Error: " + e.getMessage()));
+            ctx.status(500);
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
         }
     }
 
     public void createGame(Context ctx) {
         try {
             String authToken = ctx.header("authorization");
-            String req = ""; //= ctx.bodyAsClass(CreateGameRequest.class);
+            JsonObject json = JsonParser.parseString(ctx.body()).getAsJsonObject();
 
-            CreateGameResult result = service.createGame(new CreateGameRequest(authToken, req));
+            if (json.get("gameName") == null) {
+                throw new IllegalArgumentException();
+            }
 
-            ctx.status(200).json(result);
+            String gameName = json.get("gameName").getAsString();
+            CreateGameResult result = service.createGame(new CreateGameRequest(authToken, gameName));
+
+            ctx.status(200);
+            ctx.result(gson.toJson(result));
 
         } catch (IllegalArgumentException e) {
-            ctx.status(400).json(Map.of("message", "Error: bad request"));
+            ctx.status(400);
+            ctx.result(gson.toJson(Map.of("message", "Error: bad request")));
         } catch (UnauthorizedException e) {
-            ctx.status(401).json(Map.of("message", "Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(Map.of("message", "Error: unauthorized")));
         } catch (Exception e) {
-            ctx.status(500).json(Map.of("message", "Error: " + e.getMessage()));
+            ctx.status(500);
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
         }
     }
 
     public void joinGame(Context ctx) {
         try {
             String token = ctx.header("authorization");
-            String req = "";//= ctx.bodyAsClass(JoinGameRequest.class);
+            JsonObject json = JsonParser.parseString(ctx.body()).getAsJsonObject();
 
-            //service.joinGame(new JoinGameRequest(req, token));
+            if (json.get("playerColor") == null || json.get("gameID") == null) {
+                throw new IllegalArgumentException();
+            }
+            String playerColor = json.get("playerColor").getAsString();
+            int gameID = json.get("gameID").getAsInt();
 
-            ctx.status(200).json(Map.of());
+            service.joinGame(new JoinGameRequest(token, playerColor, gameID));
+
+            ctx.status(200);
 
         } catch (IllegalArgumentException e) {
-            ctx.status(400).json(Map.of("message", "Error: bad request"));
+            ctx.status(400);
+            ctx.result(gson.toJson(Map.of("message", "Error: bad request")));
         } catch (UnauthorizedException e) {
-            ctx.status(401).json(Map.of("message", "Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(Map.of("message", "Error: unauthorized")));
         } catch (AlreadyTakenException e) {
-            ctx.status(403).json(Map.of("message", "Error: already taken"));
+            ctx.status(403);
+            ctx.result(gson.toJson(Map.of("message", "Error: already taken")));
         } catch (Exception e) {
-            ctx.status(500).json(Map.of("message", "Error: " + e.getMessage()));
+            ctx.status(500);
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
         }
     }
 }

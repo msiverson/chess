@@ -26,9 +26,7 @@ public class SessionService {
         this.authDAO = authDAO;
     }
 
-    public LoginResult login(LoginRequest loginRequest)  {
-        System.out.println("Session Service");
-
+    public LoginResult login(LoginRequest loginRequest) {
         // IllegalArgumentException
         if (loginRequest.username() == null || loginRequest.password() == null) {
             throw new IllegalArgumentException();
@@ -61,7 +59,7 @@ public class SessionService {
 
     public void logout(LogoutRequest logoutRequest) {
         if (logoutRequest.authToken() == null) {
-            throw new IllegalArgumentException("Missing auth token");
+            throw new UnauthorizedException("Missing auth token");
         }
 
         try {

@@ -23,8 +23,6 @@ public class SessionHandler {
     }
 
     public void login(Context ctx) {
-        System.out.println("Session Handler");
-
         try {
             LoginRequest req = gson.fromJson(ctx.body(), LoginRequest.class);
             LoginResult result = service.login(req);
@@ -48,13 +46,16 @@ public class SessionHandler {
         try {
             String authToken = ctx.header("authorization");
             service.logout(new LogoutRequest(authToken));
-
             ctx.status(200);
 
         } catch (UnauthorizedException e) {
-            ctx.status(401).json(Map.of("message", "Error: unauthorized"));
+            System.out.println("401");
+            ctx.status(401);
+            ctx.result(gson.toJson(Map.of("message", "Error: unauthorized")));
         } catch (ServiceException e) {
-            ctx.status(500).json(Map.of("message", "Error: " + e.getMessage()));
+            System.out.println("500");
+            ctx.status(500);
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
         }
     }
 }
