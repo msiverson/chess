@@ -109,13 +109,17 @@ class PawnMoveCheck {
 
         // 2️⃣ Forward move (no capture)
         if (sameColumn) {
-            if (targetPiece != null) return false;
+            if (targetPiece != null) {
+                return false;
+            }
 
             return addPawnMove(moves, piecePosition, positionToCheck, isPromotionRow);
         }
-
         // 3️⃣ Diagonal capture
-        if (targetPiece == null) return false;
+
+        if (targetPiece == null) {
+            return false;
+        }
 
         if (movingPiece.getTeamColor() == targetPiece.getTeamColor()) {
             return false;

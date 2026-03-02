@@ -246,49 +246,6 @@ public class ChessGame {
         return false;
     }
 
-//    private boolean checkFromDirection(ChessPosition kingPosition, int[][]directions, int maxSteps,
-//                                       ChessPiece.PieceType[] pieceTypes) {
-//        ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
-//        ChessGame.TeamColor kingPieceColor = kingPiece.getTeamColor();
-//        for (int[] d : directions) {
-//            int currR = d[0], currC = d[1];
-//            for (int step = 1; step <= maxSteps; step++) {
-//                ChessPosition currPosition = new ChessPosition(
-//                        kingPosition.getRow()+(currR*step), kingPosition.getColumn()+(currC*step));
-//                if ((currPosition.getColumn() <= 8 && currPosition.getColumn() >= 1) &&
-//                        (currPosition.getRow() <= 8 && currPosition.getRow() >= 1)) {
-//                    ChessPiece startPiece = gameBoard.getPiece(currPosition);
-//                    if (startPiece != null) {
-//                        ChessGame.TeamColor startPieceColor = startPiece.getTeamColor();
-//                        ChessPiece.PieceType startPieceType = startPiece.getPieceType();
-//                        if (startPieceColor == kingPieceColor) {
-//                            break; // Piece from team blocks direction. Continue to next direction.
-//                        } else {
-//                            for (ChessPiece.PieceType currType : pieceTypes) {
-//                                if (step == 1) {
-//                                    if (currType == ChessPiece.PieceType.PAWN && currType == startPieceType) {
-//                                        if (kingPieceColor == TeamColor.WHITE && currR > 0) {
-//                                            return true;
-//                                        } else if (kingPieceColor == TeamColor.BLACK && currR < 0) {
-//                                            return true;
-//                                        }
-//                                    }
-//                                    if (currType == ChessPiece.PieceType.KING && currType == startPieceType) {
-//                                        return true;
-//                                    }
-//                                } if (startPiece.getPieceType() == currType && currType != ChessPiece.PieceType.PAWN
-//                                        && currType != ChessPiece.PieceType.KING) {
-//                                    return true;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
     private boolean checkFromDirection(
             ChessPosition kingPosition,
             int[][] directions,
@@ -309,12 +266,18 @@ public class ChessGame {
                         kingPosition.getColumn() + dCol * step
                 );
 
-                if (!isInBounds(currPosition)) break;
+                if (!isInBounds(currPosition)) {
+                    break;
+                }
 
                 ChessPiece piece = gameBoard.getPiece(currPosition);
-                if (piece == null) continue;
+                if (piece == null) {
+                    continue;
+                }
 
-                if (piece.getTeamColor() == kingColor) break;
+                if (piece.getTeamColor() == kingColor) {
+                    break;
+                }
 
                 ChessPiece.PieceType type = piece.getPieceType();
 
@@ -338,12 +301,18 @@ public class ChessGame {
 
         for (ChessPiece.PieceType allowed : allowedTypes) {
 
-            if (type != allowed) continue;
+            if (type != allowed) {
+                continue;
+            }
 
             // Pawn (only step 1 and directional)
             if (allowed == ChessPiece.PieceType.PAWN && step == 1) {
-                if (kingColor == TeamColor.WHITE && directionRow > 0) return true;
-                if (kingColor == TeamColor.BLACK && directionRow < 0) return true;
+                if (kingColor == TeamColor.WHITE && directionRow > 0) {
+                    return true;
+                }
+                if (kingColor == TeamColor.BLACK && directionRow < 0) {
+                    return true;
+                }
             }
 
             // King (only step 1)
