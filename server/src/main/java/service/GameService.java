@@ -3,7 +3,6 @@ package service;
 // Game
 import chess.ChessGame;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
 import dto.game.*;
 import model.GameData;
 // Auth
@@ -12,13 +11,11 @@ import model.AuthData;
 // Exceptions
 import dataaccess.DataAccessException;
 // DTO
-import org.eclipse.jetty.server.Authentication;
 import service.exceptions.AlreadyTakenException;
 import service.exceptions.ServiceException;
 import service.exceptions.UnauthorizedException;
 
 import java.util.List;
-import java.util.function.IntPredicate;
 
 public class GameService {
 
