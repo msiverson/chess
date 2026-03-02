@@ -23,7 +23,7 @@ public class DBService {
             authDAO.clear();
             gameDAO.clear();
         } catch (DataAccessException e) {
-            throw new ServiceException("Server Error", e);
+            throw new ServiceException("Server Error");
         }
     }
 }

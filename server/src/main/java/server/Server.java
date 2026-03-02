@@ -4,20 +4,25 @@ import io.javalin.Javalin;
 
 // DB imports
 import handler.DBHandler;
+import service.DBService;
 // User Path imports
 import handler.UserHandler;
+import service.GameService;
 import service.UserService;
 // Session Path imports
 import handler.SessionHandler;
 import service.SessionService;
 // Game Path imports
 import handler.GameHandler;
+import service.GameService;
 
-// Dataaccess
+// Data access
 import dataaccess.AuthDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.UserDAO;
 import dataaccess.memory.MemoryUserDAO;
+import dataaccess.GameDAO;
+import dataaccess.memory.MemoryGameDAO;
 
 public class Server {
 
@@ -29,11 +34,12 @@ public class Server {
         // DAO (Memory Implementation)
         UserDAO userDAO = new MemoryUserDAO();
         AuthDAO authDAO = new MemoryAuthDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
 
         //DB endpoint
-//        Service
-//        DBHandler dbHandler = new DBHandler();
-//        javalin.delete("/db", dbHandler::clear);
+        DBService dbService = new DBService(userDAO, authDAO, gameDAO);
+        DBHandler dbHandler = new DBHandler(dbService);
+        javalin.delete("/db", dbHandler::clear);
 
         // User endpoints
         UserService userService = new UserService(userDAO, authDAO); // Create services
@@ -46,13 +52,12 @@ public class Server {
         javalin.post("/session", sessionHandler::login);
         javalin.delete("/session", sessionHandler::logout);
 
-
         // Game endpoints
-//        Service
-//        GameHandler gameHandler = new GameHandler();
-//        javalin.get("/game", gameHandler::listGames);
-//        javalin.post("/game", gameHandler::createGame);
-//        javalin.put("/game", gameHandler::joinGame);
+        GameService gameService = new GameService(authDAO, gameDAO);
+        GameHandler gameHandler = new GameHandler(gameService);
+        javalin.get("/game", gameHandler::listGames);
+        javalin.post("/game", gameHandler::createGame);
+        javalin.put("/game", gameHandler::joinGame);
     }
 
     public int run(int desiredPort) {

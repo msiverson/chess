@@ -13,7 +13,6 @@ import service.SessionService;
 import service.exceptions.UnauthorizedException;
 import service.exceptions.ServiceException;
 
-
 public class SessionHandler {
 
     private final SessionService service;
@@ -24,11 +23,14 @@ public class SessionHandler {
     }
 
     public void login(Context ctx) {
+        System.out.println("Session Handler");
+
         try {
-            LoginRequest req = ctx.bodyAsClass(LoginRequest.class);
+            LoginRequest req = gson.fromJson(ctx.body(), LoginRequest.class);
             LoginResult result = service.login(req);
 
-            ctx.status(200).json(result);
+            ctx.status(200);
+            ctx.result(gson.toJson(result));
 
         } catch (IllegalArgumentException e) {
             ctx.status(400);
@@ -38,16 +40,16 @@ public class SessionHandler {
             ctx.result(gson.toJson(Map.of("message", "Error: unauthorized")));
         } catch (ServiceException e) {
             ctx.status(500);
-            ctx.result(gson.toJson(Map.of("message", "Error: internal error")));
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
         }
     }
 
     public void logout(Context ctx) {
         try {
-            String token = ctx.header("authorization");
-            service.logout(new LogoutRequest(token));
+            String authToken = ctx.header("authorization");
+            service.logout(new LogoutRequest(authToken));
 
-            ctx.status(200).json(Map.of());
+            ctx.status(200);
 
         } catch (UnauthorizedException e) {
             ctx.status(401).json(Map.of("message", "Error: unauthorized"));

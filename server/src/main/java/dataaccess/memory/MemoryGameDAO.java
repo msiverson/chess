@@ -4,6 +4,7 @@ import dataaccess.GameDAO;
 import model.GameData;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import dataaccess.DataAccessException;
@@ -12,7 +13,7 @@ public class MemoryGameDAO implements GameDAO {
     private final Map<Integer, GameData> gameDataDB = new HashMap<>();
 
     @Override
-    public GameData listGames() throws DataAccessException {
+    public List<GameData> listGames() throws DataAccessException {
         return null;
     }
 
