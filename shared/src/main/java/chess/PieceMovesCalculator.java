@@ -88,43 +88,69 @@ final class PawnMovesCalculator implements PieceMovesCalculator {
         return moves;
     }
 }
-
 class PawnMoveCheck {
+
     static boolean pawnMoveChecker(
-            Collection<ChessMove> moves, ChessBoard board, ChessPosition piecePosition, ChessPosition positionToCheck) {
-        ChessPiece.PieceType[] promotions = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP,
-                                                ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
-        if ((positionToCheck.getColumn() <= 8 && positionToCheck.getColumn() >= 1) &&
-                (positionToCheck.getRow() <= 8 && positionToCheck.getRow() >= 1)) {
-            if (piecePosition.getColumn() == positionToCheck.getColumn()) {
-                if (board.getPiece(positionToCheck) == null) {
-                    if (positionToCheck.getRow() == 1 || positionToCheck.getRow() == 8) {
-                        for (int i = 0; i < 4; i++) {
-                            ChessMove newMove = new ChessMove(piecePosition, positionToCheck, promotions[i]);
-                            moves.add(newMove);
-                        }
-                        return false;
-                    } else {
-                        ChessMove newMove = new ChessMove(piecePosition, positionToCheck, null);
-                        return moves.add(newMove);
-                    }
-                }
-            } else if (board.getPiece(positionToCheck) != null) {
-                if (board.getPiece(piecePosition).getTeamColor() != board.getPiece(positionToCheck).getTeamColor()) {
-                    if (positionToCheck.getRow() == 1 || positionToCheck.getRow() == 8) {
-                        for (int i = 0; i < 4; i++) {
-                            ChessMove newMove = new ChessMove(piecePosition, positionToCheck, promotions[i]);
-                            moves.add(newMove);
-                        }
-                        return false;
-                    } else {
-                        ChessMove newMove = new ChessMove(piecePosition, positionToCheck, null);
-                        return moves.add(newMove);
-                    }
-                }
-            }
+            Collection<ChessMove> moves,
+            ChessBoard board,
+            ChessPosition piecePosition,
+            ChessPosition positionToCheck) {
+
+        // 1️⃣ Bounds check first
+        if (!isInBounds(positionToCheck)) {
+            return false;
         }
-        return false;
+
+        ChessPiece movingPiece = board.getPiece(piecePosition);
+        ChessPiece targetPiece = board.getPiece(positionToCheck);
+
+        boolean sameColumn = piecePosition.getColumn() == positionToCheck.getColumn();
+        boolean isPromotionRow = positionToCheck.getRow() == 1 || positionToCheck.getRow() == 8;
+
+        // 2️⃣ Forward move (no capture)
+        if (sameColumn) {
+            if (targetPiece != null) return false;
+
+            return addPawnMove(moves, piecePosition, positionToCheck, isPromotionRow);
+        }
+
+        // 3️⃣ Diagonal capture
+        if (targetPiece == null) return false;
+
+        if (movingPiece.getTeamColor() == targetPiece.getTeamColor()) {
+            return false;
+        }
+
+        return addPawnMove(moves, piecePosition, positionToCheck, isPromotionRow);
+    }
+
+    static boolean isInBounds(ChessPosition pos) {
+        return pos.getRow() >= 1 && pos.getRow() <= 8 &&
+                pos.getColumn() >= 1 && pos.getColumn() <= 8;
+    }
+
+    private static boolean addPawnMove(
+            Collection<ChessMove> moves,
+            ChessPosition from,
+            ChessPosition to,
+            boolean isPromotion) {
+
+        if (!isPromotion) {
+            return moves.add(new ChessMove(from, to, null));
+        }
+
+        ChessPiece.PieceType[] promotions = {
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT
+        };
+
+        for (ChessPiece.PieceType type : promotions) {
+            moves.add(new ChessMove(from, to, type));
+        }
+
+        return true;
     }
 }
 
@@ -161,7 +187,9 @@ class CalculateMoves {
                 } else {
                     continueDirection = MoveCheck.moveChecker(moves, board, position, currMove);
                 }
-                if (!continueDirection) break;
+                if (!continueDirection) {
+                    break;
+                }
             }
         }
         return moves;

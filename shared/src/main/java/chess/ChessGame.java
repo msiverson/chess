@@ -1,9 +1,10 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+
+import static chess.PawnMoveCheck.isInBounds;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -245,46 +246,118 @@ public class ChessGame {
         return false;
     }
 
-    private boolean checkFromDirection(ChessPosition kingPosition, int[][]directions, int maxSteps,
-                                       ChessPiece.PieceType[] pieceTypes) {
+//    private boolean checkFromDirection(ChessPosition kingPosition, int[][]directions, int maxSteps,
+//                                       ChessPiece.PieceType[] pieceTypes) {
+//        ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
+//        ChessGame.TeamColor kingPieceColor = kingPiece.getTeamColor();
+//        for (int[] d : directions) {
+//            int currR = d[0], currC = d[1];
+//            for (int step = 1; step <= maxSteps; step++) {
+//                ChessPosition currPosition = new ChessPosition(
+//                        kingPosition.getRow()+(currR*step), kingPosition.getColumn()+(currC*step));
+//                if ((currPosition.getColumn() <= 8 && currPosition.getColumn() >= 1) &&
+//                        (currPosition.getRow() <= 8 && currPosition.getRow() >= 1)) {
+//                    ChessPiece startPiece = gameBoard.getPiece(currPosition);
+//                    if (startPiece != null) {
+//                        ChessGame.TeamColor startPieceColor = startPiece.getTeamColor();
+//                        ChessPiece.PieceType startPieceType = startPiece.getPieceType();
+//                        if (startPieceColor == kingPieceColor) {
+//                            break; // Piece from team blocks direction. Continue to next direction.
+//                        } else {
+//                            for (ChessPiece.PieceType currType : pieceTypes) {
+//                                if (step == 1) {
+//                                    if (currType == ChessPiece.PieceType.PAWN && currType == startPieceType) {
+//                                        if (kingPieceColor == TeamColor.WHITE && currR > 0) {
+//                                            return true;
+//                                        } else if (kingPieceColor == TeamColor.BLACK && currR < 0) {
+//                                            return true;
+//                                        }
+//                                    }
+//                                    if (currType == ChessPiece.PieceType.KING && currType == startPieceType) {
+//                                        return true;
+//                                    }
+//                                } if (startPiece.getPieceType() == currType && currType != ChessPiece.PieceType.PAWN
+//                                        && currType != ChessPiece.PieceType.KING) {
+//                                    return true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+    private boolean checkFromDirection(
+            ChessPosition kingPosition,
+            int[][] directions,
+            int maxSteps,
+            ChessPiece.PieceType[] pieceTypes) {
+
         ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
-        ChessGame.TeamColor kingPieceColor = kingPiece.getTeamColor();
+        ChessGame.TeamColor kingColor = kingPiece.getTeamColor();
+
         for (int[] d : directions) {
-            int currR = d[0], currC = d[1];
+            int dRow = d[0];
+            int dCol = d[1];
+
             for (int step = 1; step <= maxSteps; step++) {
+
                 ChessPosition currPosition = new ChessPosition(
-                        kingPosition.getRow()+(currR*step), kingPosition.getColumn()+(currC*step));
-                if ((currPosition.getColumn() <= 8 && currPosition.getColumn() >= 1) &&
-                        (currPosition.getRow() <= 8 && currPosition.getRow() >= 1)) {
-                    ChessPiece startPiece = gameBoard.getPiece(currPosition);
-                    if (startPiece != null) {
-                        ChessGame.TeamColor startPieceColor = startPiece.getTeamColor();
-                        ChessPiece.PieceType startPieceType = startPiece.getPieceType();
-                        if (startPieceColor == kingPieceColor) {
-                            break; // Piece from team blocks direction. Continue to next direction.
-                        } else {
-                            for (ChessPiece.PieceType currType : pieceTypes) {
-                                if (step == 1) {
-                                    if (currType == ChessPiece.PieceType.PAWN && currType == startPieceType) {
-                                        if (kingPieceColor == TeamColor.WHITE && currR > 0) {
-                                            return true;
-                                        } else if (kingPieceColor == TeamColor.BLACK && currR < 0) {
-                                            return true;
-                                        }
-                                    }
-                                    if (currType == ChessPiece.PieceType.KING && currType == startPieceType) {
-                                        return true;
-                                    }
-                                } if (startPiece.getPieceType() == currType && currType != ChessPiece.PieceType.PAWN
-                                        && currType != ChessPiece.PieceType.KING) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
+                        kingPosition.getRow() + dRow * step,
+                        kingPosition.getColumn() + dCol * step
+                );
+
+                if (!isInBounds(currPosition)) break;
+
+                ChessPiece piece = gameBoard.getPiece(currPosition);
+                if (piece == null) continue;
+
+                if (piece.getTeamColor() == kingColor) break;
+
+                ChessPiece.PieceType type = piece.getPieceType();
+
+                if (isThreat(type, pieceTypes, kingColor, dRow, step)) {
+                    return true;
                 }
+
+                break; // enemy piece blocks further scanning
             }
         }
+
+        return false;
+    }
+
+    private boolean isThreat(
+            ChessPiece.PieceType type,
+            ChessPiece.PieceType[] allowedTypes,
+            ChessGame.TeamColor kingColor,
+            int directionRow,
+            int step) {
+
+        for (ChessPiece.PieceType allowed : allowedTypes) {
+
+            if (type != allowed) continue;
+
+            // Pawn (only step 1 and directional)
+            if (allowed == ChessPiece.PieceType.PAWN && step == 1) {
+                if (kingColor == TeamColor.WHITE && directionRow > 0) return true;
+                if (kingColor == TeamColor.BLACK && directionRow < 0) return true;
+            }
+
+            // King (only step 1)
+            if (allowed == ChessPiece.PieceType.KING && step == 1) {
+                return true;
+            }
+
+            // Sliding pieces (rook, bishop, queen)
+            if (allowed != ChessPiece.PieceType.PAWN &&
+                    allowed != ChessPiece.PieceType.KING) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -295,28 +368,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) {
-            ArrayList<ChessPosition> piecesPositions = new ArrayList<>();
-
-            for (int i = 1; i <= 8; i++) {
-                for (int j = 1; j <= 8; j++) {
-                    ChessPosition currPosition = new ChessPosition(i, j);
-                    if (gameBoard.getPiece(currPosition) != null) {
-                        if (gameBoard.getPiece(currPosition).getTeamColor() == teamColor) {
-                             piecesPositions.add(currPosition);
-                        }
-                    }
-                }
-            }
-
-            for (ChessPosition currPiecePosition : piecesPositions) {
-                if (!validMoves(currPiecePosition).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return isInCheck(teamColor) && hasAnyValidMove(teamColor);
     }
 
     /**
@@ -327,28 +379,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) {
-            ArrayList<ChessPosition> piecesPositions = new ArrayList<>();
+        return !isInCheck(teamColor) && hasAnyValidMove(teamColor);
+    }
 
-            for (int i = 1; i <= 8; i++) {
-                for (int j = 1; j <= 8; j++) {
-                    ChessPosition currPosition = new ChessPosition(i, j);
-                    if (gameBoard.getPiece(currPosition) != null) {
-                        if (gameBoard.getPiece(currPosition).getTeamColor() == teamColor) {
-                            piecesPositions.add(currPosition);
-                        }
+    private boolean hasAnyValidMove(TeamColor teamColor) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition currPosition = new ChessPosition(i, j);
+                ChessPiece piece = gameBoard.getPiece(currPosition);
+
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    if (!validMoves(currPosition).isEmpty()) {
+                        return false;
                     }
                 }
             }
-
-            for (ChessPosition currPiecePosition : piecesPositions) {
-                if (!validMoves(currPiecePosition).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
