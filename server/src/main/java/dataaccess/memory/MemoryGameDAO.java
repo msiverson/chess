@@ -1,14 +1,14 @@
 package dataaccess.memory;
 
-import dataaccess.GameDAO;
-import model.GameData;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
+
+import model.GameData;
 
 public class MemoryGameDAO implements GameDAO {
     private final Map<Integer, GameData> gameDataDB = new HashMap<>();

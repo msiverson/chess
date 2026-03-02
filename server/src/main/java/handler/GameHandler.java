@@ -5,8 +5,13 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dto.game.*;
 import io.javalin.http.Context;
+
+import dto.game.CreateGameRequest;
+import dto.game.CreateGameResult;
+import dto.game.JoinGameRequest;
+import dto.game.ListGamesRequest;
+import dto.game.ListGamesResult;
 
 import service.GameService;
 import service.exceptions.AlreadyTakenException;

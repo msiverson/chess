@@ -1,14 +1,15 @@
 package service;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.*;
+
 import dataaccess.memory.MemoryUserDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import model.UserData;
 import dto.session.*;
-
-import org.junit.jupiter.api.*;
 import service.exceptions.UnauthorizedException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SessionServiceTests {
 
@@ -28,34 +29,34 @@ public class SessionServiceTests {
     // =========================
 
     @Test
+    @DisplayName("login() Positive")
     public void loginPositive() throws Exception {
         // Arrange
-        UserData user = new UserData("alice", "password", "email");
+        UserData user = new UserData("validUsername", "validPassword", "validEmail");
         userDAO.addUser(user);
 
-        LoginRequest request = new LoginRequest("alice", "password");
+        LoginRequest request = new LoginRequest("validUsername", "validPassword");
 
         // Act
         LoginResult result = service.login(request);
 
         // Assert
-        assertEquals("alice", result.username());
+        assertEquals("validUsername", result.username());
         assertNotNull(result.authToken());
         assertNotEquals("", result.authToken());
     }
 
     @Test
+    @DisplayName("login() Negative [Wrong Password]")
     public void loginNegativeWrongPassword() throws Exception {
         // Arrange
-        UserData user = new UserData("alice", "password", "email");
+        UserData user = new UserData("validUsername", "validPassword", "validEmail");
         userDAO.addUser(user);
 
-        LoginRequest request = new LoginRequest("alice", "wrong");
+        LoginRequest request = new LoginRequest("validUsername", "wrong");
 
         // Act & Assert
-        assertThrows(UnauthorizedException.class, () -> {
-            service.login(request);
-        });
+        assertThrows(UnauthorizedException.class, () -> service.login(request));
     }
 
     // =========================
@@ -63,16 +64,16 @@ public class SessionServiceTests {
     // =========================
 
     @Test
+    @DisplayName("logout() Positive")
     public void logoutPositive() throws Exception {
         // Arrange
-        UserData user = new UserData("alice", "password", "email");
+        UserData user = new UserData("validUsername", "validPassword", "validEmail");
         userDAO.addUser(user);
 
         LoginResult loginResult =
-                service.login(new LoginRequest("alice", "password"));
+                service.login(new LoginRequest("validUsername", "validPassword"));
 
-        LogoutRequest logoutRequest =
-                new LogoutRequest(loginResult.authToken());
+        LogoutRequest logoutRequest = new LogoutRequest(loginResult.authToken());
 
         // Act
         service.logout(logoutRequest);
@@ -82,12 +83,12 @@ public class SessionServiceTests {
     }
 
     @Test
+    @DisplayName("logout() Negative [Invalid Token]")
     public void logoutNegativeInvalidToken() {
         LogoutRequest request =
-                new LogoutRequest("fake-token");
+                new LogoutRequest("invalidToken");
 
-        assertThrows(UnauthorizedException.class, () -> {
-            service.logout(request);
-        });
+        // Act & Assert
+        assertThrows(UnauthorizedException.class, () -> service.logout(request));
     }
 }

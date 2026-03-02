@@ -2,16 +2,16 @@ package handler;
 
 import java.util.Map;
 
-import io.javalin.http.Context;
 import com.google.gson.Gson;
+import io.javalin.http.Context;
 
 import dto.session.LoginRequest;
 import dto.session.LoginResult;
 import dto.session.LogoutRequest;
+
 import service.SessionService;
-// Exceptions
-import service.exceptions.UnauthorizedException;
 import service.exceptions.ServiceException;
+import service.exceptions.UnauthorizedException;
 
 public class SessionHandler {
 

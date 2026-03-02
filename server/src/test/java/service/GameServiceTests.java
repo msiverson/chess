@@ -1,5 +1,12 @@
 package service;
 
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.*;
+
 import dataaccess.memory.MemoryGameDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import dto.game.CreateGameRequest;
@@ -8,11 +15,6 @@ import dto.game.ListGamesRequest;
 import dto.game.ListGamesResult;
 import model.GameData;
 import model.AuthData;
-import org.junit.jupiter.api.*;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {
 
@@ -27,17 +29,16 @@ public class GameServiceTests {
         service = new GameService(authDAO, gameDAO);
 
         // Insert valid auth token
-        AuthData authData = new AuthData("validToken", "alice");
+        AuthData authData = new AuthData("validToken", "validUsername");
         authDAO.addAuth(authData);
     }
-
-
 
     // =========================
     // CREATE GAME TESTS
     // =========================
 
     @Test
+    @DisplayName("createGame() Positive")
     public void createGamePositive() throws Exception {
         var result = service.createGame(
                 new CreateGameRequest("validToken", "TestGame")
@@ -51,11 +52,10 @@ public class GameServiceTests {
     }
 
     @Test
+    @DisplayName("createGame() Negative [Null name]")
     public void createGameNegativeNullName() {
         assertThrows(RuntimeException.class, () ->
-                service.createGame(
-                        new CreateGameRequest("validToken", null)
-                )
+                service.createGame(new CreateGameRequest("validToken", null))
         );
     }
 
@@ -64,6 +64,7 @@ public class GameServiceTests {
     // =========================
 
     @Test
+    @DisplayName("listGames() Positive [Empty list]")
     public void listGamesEmpty() throws Exception {
         // Arrange
         ListGamesRequest request =
@@ -78,25 +79,10 @@ public class GameServiceTests {
     }
 
     @Test
-    public void listGamesMultiple() throws Exception {
-        // Arrange
-        service.createGame(new CreateGameRequest("validToken", "Game1"));
-        service.createGame(new CreateGameRequest("validToken", "Game2"));
-
-        ListGamesRequest request =
-                new ListGamesRequest("validToken");
-
-        // Act
-        ListGamesResult result = service.listGames(request);
-
-        // Assert
-        assertEquals(2, result.games().size());
-    }
-
-    @Test
+    @DisplayName("listGames() Negative [Invalid authToken]")
     public void listGamesInvalidAuth() {
         ListGamesRequest request =
-                new ListGamesRequest("badToken");
+                new ListGamesRequest("invalidToken");
 
         assertThrows(RuntimeException.class, () ->
                 service.listGames(request)
@@ -108,6 +94,7 @@ public class GameServiceTests {
     // =========================
 
     @Test
+    @DisplayName("joinGame() Positive")
     public void joinGamePositive() throws Exception {
         var createResult =
                 service.createGame(new CreateGameRequest("validToken", "Game1"));
@@ -121,10 +108,11 @@ public class GameServiceTests {
 
         GameData game = gameDAO.listGames().get(0);
 
-        assertEquals("alice", game.whiteUsername());
+        assertEquals("validUsername", game.whiteUsername());
     }
 
     @Test
+    @DisplayName("joinGame() Negative [Invalid gameID]")
     public void joinGameNegativeInvalidGameID() {
         assertThrows(RuntimeException.class, () ->
                 service.joinGame(

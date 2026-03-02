@@ -2,27 +2,22 @@ package server;
 
 import io.javalin.Javalin;
 
-// DB imports
-import handler.DBHandler;
-import service.DBService;
-// User Path imports
-import handler.UserHandler;
-import service.GameService;
-import service.UserService;
-// Session Path imports
-import handler.SessionHandler;
-import service.SessionService;
-// Game Path imports
-import handler.GameHandler;
-import service.GameService;
-
-// Data access
 import dataaccess.AuthDAO;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.UserDAO;
-import dataaccess.memory.MemoryUserDAO;
 import dataaccess.GameDAO;
+import dataaccess.UserDAO;
+import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
+
+import handler.DBHandler;
+import handler.GameHandler;
+import handler.SessionHandler;
+import handler.UserHandler;
+
+import service.DBService;
+import service.GameService;
+import service.SessionService;
+import service.UserService;
 
 public class Server {
 
@@ -36,13 +31,13 @@ public class Server {
         AuthDAO authDAO = new MemoryAuthDAO();
         GameDAO gameDAO = new MemoryGameDAO();
 
-        //DB endpoint
+        // DB endpoint
         DBService dbService = new DBService(userDAO, authDAO, gameDAO);
         DBHandler dbHandler = new DBHandler(dbService);
         javalin.delete("/db", dbHandler::clear);
 
         // User endpoints
-        UserService userService = new UserService(userDAO, authDAO); // Create services
+        UserService userService = new UserService(userDAO, authDAO);
         UserHandler userHandler = new UserHandler(userService);
         javalin.post("/user", userHandler::register);
 

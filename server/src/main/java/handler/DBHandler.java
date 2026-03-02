@@ -1,10 +1,11 @@
 package handler;
 
+import java.util.Map;
+
 import com.google.gson.Gson;
 import io.javalin.http.Context;
-import service.DBService;
 
-import java.util.Map;
+import service.DBService;
 
 public class DBHandler {
 
@@ -19,7 +20,6 @@ public class DBHandler {
         try {
             service.clear();
             ctx.status(200);
-            ctx.result("{}");
 
         } catch (Exception e) {
             ctx.status(500);

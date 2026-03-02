@@ -2,20 +2,19 @@ package service;
 
 import java.util.UUID;
 
-// Auth
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import model.AuthData;
-// User
 import dataaccess.UserDAO;
-import model.UserData;
-// Exceptions
-import service.exceptions.ServiceException;
-import service.exceptions.UnauthorizedException;
-// DTO
+
 import dto.session.LoginRequest;
 import dto.session.LoginResult;
 import dto.session.LogoutRequest;
+
+import model.AuthData;
+import model.UserData;
+
+import service.exceptions.ServiceException;
+import service.exceptions.UnauthorizedException;
 
 public class SessionService {
     private final UserDAO userDAO;

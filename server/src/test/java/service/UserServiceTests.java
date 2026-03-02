@@ -1,17 +1,17 @@
 package service;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.*;
+
 import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.memory.MemoryUserDAO;
 import dto.user.RegisterRequest;
 import dto.user.RegisterResult;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import service.exceptions.AlreadyExistsException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTests {
 
@@ -27,26 +27,25 @@ public class UserServiceTests {
     }
 
     @Test
+    @DisplayName("register() Positive")
     void registerSuccess() throws Exception {
         RegisterRequest request =
-                new RegisterRequest("alice", "password", "email");
+                new RegisterRequest("Mark", "password", "email");
 
         RegisterResult result = service.register(request);
 
-        assertEquals("alice", result.username());
+        assertEquals("Mark", result.username());
         assertNotNull(result.authToken());
     }
 
     @Test
+    @DisplayName("register() Negative [User Already Exists]")
     void registerAlreadyExists() throws Exception {
         RegisterRequest request =
-                new RegisterRequest("bob", "pass", "email");
+                new RegisterRequest("EvilMark", "pass", "email");
 
         service.register(request);
 
-        assertThrows(
-                AlreadyExistsException.class,
-                () -> service.register(request)
-        );
+        assertThrows(AlreadyExistsException.class, () -> service.register(request));
     }
 }

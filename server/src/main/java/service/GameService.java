@@ -1,21 +1,26 @@
 package service;
 
-// Game
+import java.util.List;
+
 import chess.ChessGame;
-import dataaccess.GameDAO;
-import dto.game.*;
-import model.GameData;
-// Auth
+
 import dataaccess.AuthDAO;
-import model.AuthData;
-// Exceptions
 import dataaccess.DataAccessException;
-// DTO
+import dataaccess.GameDAO;
+
+import dto.game.CreateGameRequest;
+import dto.game.CreateGameResult;
+import dto.game.GameInfo;
+import dto.game.JoinGameRequest;
+import dto.game.ListGamesRequest;
+import dto.game.ListGamesResult;
+
+import model.AuthData;
+import model.GameData;
+
 import service.exceptions.AlreadyTakenException;
 import service.exceptions.ServiceException;
 import service.exceptions.UnauthorizedException;
-
-import java.util.List;
 
 public class GameService {
 
@@ -74,10 +79,17 @@ public class GameService {
             int newGameID = gameIDCount++;
             ChessGame newGame = new ChessGame();
 
-            gameDAO.createGame(new GameData(newGameID, null, null, createGameRequest.gameName(), newGame));
+            gameDAO.createGame(
+                new GameData(
+                    newGameID,
+                    null,
+                    null,
+                    createGameRequest.gameName(),
+                    newGame
+                )
+            );
 
             return new CreateGameResult(newGameID);
-
 
         } catch (DataAccessException e) {
            throw new ServiceException("Server error");
