@@ -1,6 +1,11 @@
-package dataaccess;
+package dataaccess.sql;
 
-import java.sql.*;
+import dataaccess.DataAccessException;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -9,11 +14,53 @@ public class DatabaseManager {
     private static String dbPassword;
     private static String connectionUrl;
 
+    private static final String[] CREATE_STATEMENTS = {
+            """
+        CREATE TABLE IF NOT EXISTS users (
+            username VARCHAR(50) PRIMARY KEY,
+            password VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE
+        ) ENGINE=InnoDB
+        """,
+
+            """
+        CREATE TABLE IF NOT EXISTS games (
+            game_id INT AUTO_INCREMENT PRIMARY KEY,
+            white_username VARCHAR(50),
+            black_username VARCHAR(50),
+            game_name VARCHAR(100),
+            game_state TEXT
+        ) ENGINE=InnoDB
+        """,
+
+            """
+        CREATE TABLE IF NOT EXISTS auth_tokens (
+            auth_token VARCHAR(255) PRIMARY KEY,
+            username VARCHAR(50)
+        ) ENGINE=InnoDB
+        """
+    };
+
     /*
+     * Static Initialization (Initializes the fields of DatabaseManager on first reference to it)
      * Load the database information for the db.properties file.
      */
     static {
         loadPropertiesFromResources();
+    }
+
+    public static void configureDatabase() throws DataAccessException {
+        createDatabase();
+
+        try (Connection conn = getConnection()) {
+            for (String statement : CREATE_STATEMENTS) {
+                try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                    ps.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Database initialization failed", e);
+        }
     }
 
     /**
@@ -30,6 +77,7 @@ public class DatabaseManager {
     }
 
     /**
+     * WRAPPER FOR JAVA SQL getConnection()
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
      * be short-lived, and you must close the connection when you are done with it.

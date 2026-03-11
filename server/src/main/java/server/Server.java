@@ -8,6 +8,9 @@ import dataaccess.UserDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.memory.MemoryGameDAO;
 import dataaccess.memory.MemoryUserDAO;
+import dataaccess.sql.SQLAuthDAO;
+import dataaccess.sql.SQLGameDAO;
+import dataaccess.sql.SQLUserDAO;
 
 import handler.DBHandler;
 import handler.GameHandler;
@@ -27,9 +30,14 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // DAO (Memory Implementation)
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+//        UserDAO userDAO = new MemoryUserDAO();
+//        AuthDAO authDAO = new MemoryAuthDAO();
+//        GameDAO gameDAO = new MemoryGameDAO();
+
+        // DAO (SQL Implementation)
+        UserDAO userDAO = new SQLUserDAO();
+        AuthDAO authDAO = new SQLAuthDAO();
+        GameDAO gameDAO = new SQLGameDAO();
 
         // DB endpoint
         DBService dbService = new DBService(userDAO, authDAO, gameDAO);
