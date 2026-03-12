@@ -39,11 +39,6 @@ public class Server {
             throw new RuntimeException();
         }
 
-        // DAO (Memory Implementation)
-//        UserDAO userDAO = new MemoryUserDAO();
-//        AuthDAO authDAO = new MemoryAuthDAO();
-//        GameDAO gameDAO = new MemoryGameDAO();
-
         // DAO (SQL Implementation)
         UserDAO userDAO = new SQLUserDAO();
         AuthDAO authDAO = new SQLAuthDAO();
