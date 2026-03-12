@@ -26,7 +26,6 @@ public class GameService {
 
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-    private Integer gameIDCount = 1;
 
     public GameService (AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -78,6 +77,7 @@ public class GameService {
             // Get username from authData
             ChessGame newGame = new ChessGame();
 
+            // GameID created when adding to the database
             int newGameID = gameDAO.createGame(
                 new GameData(
                     0,

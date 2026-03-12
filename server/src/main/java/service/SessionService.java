@@ -42,10 +42,6 @@ public class SessionService {
             }
 
             // Verify password
-//            if (!user.password().equals(loginRequest.password())) {
-//                throw new UnauthorizedException("Invalid password");
-//            }
-
             if (!BCrypt.checkpw(loginRequest.password(), user.password())) {
                 throw new UnauthorizedException("Incorrect password");
             }

@@ -53,7 +53,7 @@ public class DatabaseManager {
         """
     };
 
-    /*
+    /**
      * Static Initialization (Initializes the fields of DatabaseManager on first reference to it)
      * Load the database information for the db.properties file.
      */
@@ -97,6 +97,9 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Create the tables of the database
+     */
     public static void configureDatabase() throws DataAccessException {
         try (Connection conn = getConnection()) {
             for (String statement : CREATE_STATEMENTS) {
@@ -132,5 +135,4 @@ public class DatabaseManager {
             throw new DataAccessException("failed to get connection", ex);
         }
     }
-
 }

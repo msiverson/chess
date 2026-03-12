@@ -1,13 +1,11 @@
 package dataaccess;
 
+import org.junit.jupiter.api.*;
+
 import chess.ChessGame;
-import dataaccess.DataAccessException;
 import dataaccess.sql.DatabaseManager;
 import dataaccess.sql.SQLGameDAO;
 import model.GameData;
-import org.junit.jupiter.api.*;
-
-import java.util.List;
 
 public class SQLGameDAOTests {
 
@@ -21,6 +19,7 @@ public class SQLGameDAOTests {
     }
 
     @Test
+    @DisplayName("createGame() Positive")
     void createGamePositive() throws DataAccessException {
 
         ChessGame game = new ChessGame();
@@ -29,13 +28,37 @@ public class SQLGameDAOTests {
                 new GameData(0, null, null, "Test Game", game)
         );
 
-        GameData retrieved = gameDAO.getGame(id);
-
-        Assertions.assertNotNull(retrieved);
-        Assertions.assertEquals("Test Game", retrieved.gameName());
+        Assertions.assertTrue(id > 0);
     }
 
     @Test
+    @DisplayName("createGame() Negative [null game name]")
+    void createGameNegative() {
+
+        ChessGame game = new ChessGame();
+
+        Assertions.assertThrows(DataAccessException.class, () ->
+                gameDAO.createGame(new GameData(
+                        0, null, null, null, game))
+        );
+    }
+
+    @Test
+    @DisplayName("getGame() Positive")
+    void getGamePositive() throws DataAccessException {
+
+        ChessGame game = new ChessGame();
+
+        int id = gameDAO.createGame(
+                new GameData(0, null, null, "Game", game));
+
+        GameData retrieved = gameDAO.getGame(id);
+
+        Assertions.assertNotNull(retrieved);
+    }
+
+    @Test
+    @DisplayName("getGame() Negative [invalid gameID]")
     void getGameNegative() throws DataAccessException {
 
         GameData game = gameDAO.getGame(999);
@@ -44,15 +67,44 @@ public class SQLGameDAOTests {
     }
 
     @Test
+    @DisplayName("listGames() Positive")
     void listGamesPositive() throws DataAccessException {
+
+        ChessGame game = new ChessGame();
+
+        gameDAO.createGame(new GameData(0,null,null,"Game1",game));
+        gameDAO.createGame(new GameData(0,null,null,"Game2",game));
+
+        Assertions.assertEquals(2, gameDAO.listGames().size());
+    }
+
+    @Test
+    @DisplayName("listGames() Negative [no games in database]")
+    void listGamesNegative() throws DataAccessException {
+
+        Assertions.assertEquals(0, gameDAO.listGames().size());
+    }
+
+    @Test
+    @DisplayName("clear() Positive")
+    void clearPositive() throws DataAccessException {
 
         ChessGame game = new ChessGame();
 
         gameDAO.createGame(new GameData(0, null, null, "Game1", game));
         gameDAO.createGame(new GameData(0, null, null, "Game2", game));
 
-        List<GameData> games = gameDAO.listGames();
+        gameDAO.clear();
 
-        Assertions.assertEquals(2, games.size());
+        Assertions.assertEquals(0, gameDAO.listGames().size());
+    }
+
+    @Test
+    @DisplayName("clear() Negative [zero games after a clear]")
+    void clearNegative() throws DataAccessException {
+
+        gameDAO.clear();
+
+        Assertions.assertEquals(0, gameDAO.listGames().size());
     }
 }

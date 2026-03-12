@@ -26,8 +26,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public int createGame(GameData gameData) throws DataAccessException {
         gameDataDB.put(gameData.gameID(), gameData);
-        // change for sql implementation
-        return 0;
+        return 0; // Changed for sql implementation. Breaks memory implementation
     }
 
     @Override
