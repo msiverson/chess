@@ -25,13 +25,9 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("addAuth() Positive")
     void addAuthPositive() throws DataAccessException {
-
         userDAO.addUser(new UserData("validUsername", "validPassword", "validEmail"));
-
         AuthData auth = new AuthData("validToken", "validUsername");
-
         authDAO.addAuth(auth);
-
         AuthData retrieved = authDAO.getAuth("validToken");
 
         Assertions.assertNotNull(retrieved);
@@ -41,7 +37,6 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("addAuth() Negative [add auth to nonexistent user]")
     void addAuthNegative() {
-
         AuthData auth = new AuthData("validToken", "invalidUsername");
 
         Assertions.assertThrows(DataAccessException.class, () -> authDAO.addAuth(auth));
@@ -50,11 +45,8 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("getAuth() Positive")
     void getAuthPositive() throws DataAccessException {
-
         userDAO.addUser(new UserData("validUsername", "validPassword", "validEmail"));
-
         authDAO.addAuth(new AuthData("validToken", "validUsername"));
-
         AuthData retrieved = authDAO.getAuth("validToken");
 
         Assertions.assertNotNull(retrieved);
@@ -63,7 +55,6 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("getAuth() Negative [invalid token provided]")
     void getAuthNegative() throws DataAccessException {
-
         AuthData auth = authDAO.getAuth("invalidToken");
 
         Assertions.assertNull(auth);
@@ -72,11 +63,8 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("deleteAuth() Positive")
     void deleteAuthPositive() throws DataAccessException {
-
         userDAO.addUser(new UserData("validUsername", "validPassword", "validEmail"));
-
         authDAO.addAuth(new AuthData("validToken", "validUsername"));
-
         authDAO.deleteAuth("validToken");
 
         Assertions.assertNull(authDAO.getAuth("validToken"));
@@ -85,7 +73,6 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("deleteAuth() Negative [delete nonexistent token]")
     void deleteAuthNegative() throws DataAccessException {
-
         authDAO.deleteAuth("invalidToken");
 
         Assertions.assertNull(authDAO.getAuth("invalidToken"));
@@ -94,11 +81,8 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("clear() Positive")
     void clearPositive() throws DataAccessException {
-
         userDAO.addUser(new UserData("validUsername", "validPassword", "validEmail"));
-
         authDAO.addAuth(new AuthData("validToken", "validUsername"));
-
         authDAO.clear();
 
         Assertions.assertNull(authDAO.getAuth("validToken"));
@@ -107,7 +91,6 @@ public class SQLAuthDAOTests {
     @Test
     @DisplayName("clear() Negative [getting auth after clear]")
     void clearNegative() throws DataAccessException {
-
         authDAO.clear();
 
         Assertions.assertNull(authDAO.getAuth("invalidAuth"));

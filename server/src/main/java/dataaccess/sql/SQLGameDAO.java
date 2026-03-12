@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import chess.ChessGame;
 
 public class SQLGameDAO implements GameDAO {
 

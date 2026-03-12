@@ -22,12 +22,10 @@ public class SQLAuthDAO implements AuthDAO {
                 if (rs.next()) {
                     String token = rs.getString("auth_token");
                     String username = rs.getString("username");
-
                     return new AuthData(token, username);
                 }
             }
             return null;
-
         } catch (SQLException e) {
             throw new DataAccessException("Error retrieving auth token", e);
         }

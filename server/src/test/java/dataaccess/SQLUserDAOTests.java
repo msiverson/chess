@@ -21,11 +21,8 @@ public class SQLUserDAOTests {
     @Test
     @DisplayName("addUser() Positive")
     void addUserPositive() throws DataAccessException {
-
         UserData user = new UserData("validUsername", "validPassword", "validEmail");
-
         userDAO.addUser(user);
-
         UserData retrieved = userDAO.getUser("validUsername");
 
         Assertions.assertNotNull(retrieved);
@@ -35,9 +32,7 @@ public class SQLUserDAOTests {
     @Test
     @DisplayName("addUser() Negative [Duplicate Username]")
     void addUserDuplicateNegative() throws DataAccessException {
-
         UserData user = new UserData("validUsername", "validPassword", "validEmail");
-
         userDAO.addUser(user);
 
         Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(user));
@@ -46,11 +41,8 @@ public class SQLUserDAOTests {
     @Test
     @DisplayName("getUser() Positive")
     void getUserPositive() throws DataAccessException {
-
         UserData user = new UserData("validUsername", "validPassword", "validEmail");
-
         userDAO.addUser(user);
-
         UserData retrieved = userDAO.getUser("validUsername");
 
         Assertions.assertNotNull(retrieved);
@@ -59,7 +51,6 @@ public class SQLUserDAOTests {
     @Test
     @DisplayName("getUser() Negative [retrieve nonexistent username]")
     void getUserNegative() throws DataAccessException {
-
         UserData retrieved = userDAO.getUser("invalidUsername");
 
         Assertions.assertNull(retrieved);
@@ -68,9 +59,7 @@ public class SQLUserDAOTests {
     @Test
     @DisplayName("clear() Positive")
     void clearPositive() throws DataAccessException {
-
         userDAO.addUser(new UserData("validUsername", "validPassword", "validEmail"));
-
         userDAO.clear();
 
         Assertions.assertNull(userDAO.getUser("a"));
@@ -79,7 +68,6 @@ public class SQLUserDAOTests {
     @Test
     @DisplayName("clear() Negative [getting username after clear]")
     void clearNegative() throws DataAccessException {
-
         userDAO.clear();
 
         Assertions.assertNull(userDAO.getUser("invalidUsername"));
