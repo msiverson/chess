@@ -11,7 +11,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLGameDAO extends SQLDAO implements GameDAO {
+public class SQLGameDAO implements GameDAO {
 
     private final Gson gson = new Gson();
 
