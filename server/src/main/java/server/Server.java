@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccessException;
 import io.javalin.Javalin;
 
 import dataaccess.AuthDAO;
@@ -11,6 +12,8 @@ import dataaccess.memory.MemoryUserDAO;
 import dataaccess.sql.SQLAuthDAO;
 import dataaccess.sql.SQLGameDAO;
 import dataaccess.sql.SQLUserDAO;
+import static dataaccess.sql.DatabaseManager.configureDatabase;
+import static dataaccess.sql.DatabaseManager.createDatabase;
 
 import handler.DBHandler;
 import handler.GameHandler;
@@ -28,6 +31,13 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+
+        try {
+            createDatabase();
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException();
+        }
 
         // DAO (Memory Implementation)
 //        UserDAO userDAO = new MemoryUserDAO();

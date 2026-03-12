@@ -29,14 +29,26 @@ public class DatabaseManager {
             white_username VARCHAR(50),
             black_username VARCHAR(50),
             game_name VARCHAR(100),
-            game_state TEXT
+            game_state TEXT,
+        
+            FOREIGN KEY (white_username)
+                REFERENCES users(username)
+                ON DELETE SET NULL,
+        
+            FOREIGN KEY (black_username)
+                REFERENCES users(username)
+                ON DELETE SET NULL
         ) ENGINE=InnoDB
         """,
 
             """
         CREATE TABLE IF NOT EXISTS auth_tokens (
             auth_token VARCHAR(255) PRIMARY KEY,
-            username VARCHAR(50)
+            username VARCHAR(50) NOT NULL
+        
+            FOREIGN KEY (username)
+                REFERENCES users(username)
+                ON DELETE CASCADE
         ) ENGINE=InnoDB
         """
     };
@@ -49,18 +61,27 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    public static void configureDatabase() throws DataAccessException {
-        createDatabase();
-
-        try (Connection conn = getConnection()) {
-            for (String statement : CREATE_STATEMENTS) {
-                try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                    ps.executeUpdate();
-                }
+    private static void loadPropertiesFromResources() {
+        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
+            if (propStream == null) {
+                throw new Exception("Unable to load db.properties");
             }
-        } catch (SQLException e) {
-            throw new DataAccessException("Database initialization failed", e);
+            Properties props = new Properties();
+            props.load(propStream);
+            loadProperties(props);
+        } catch (Exception ex) {
+            throw new RuntimeException("unable to process db.properties", ex);
         }
+    }
+
+    private static void loadProperties(Properties props) {
+        databaseName = props.getProperty("db.name");
+        dbUsername = props.getProperty("db.user");
+        dbPassword = props.getProperty("db.password");
+
+        var host = props.getProperty("db.host");
+        var port = Integer.parseInt(props.getProperty("db.port"));
+        connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
 
     /**
@@ -73,6 +94,18 @@ public class DatabaseManager {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
+        }
+    }
+
+    public static void configureDatabase() throws DataAccessException {
+        try (Connection conn = getConnection()) {
+            for (String statement : CREATE_STATEMENTS) {
+                try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                    ps.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Database initialization failed", e);
         }
     }
 
@@ -100,26 +133,4 @@ public class DatabaseManager {
         }
     }
 
-    private static void loadPropertiesFromResources() {
-        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
-            if (propStream == null) {
-                throw new Exception("Unable to load db.properties");
-            }
-            Properties props = new Properties();
-            props.load(propStream);
-            loadProperties(props);
-        } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties", ex);
-        }
-    }
-
-    private static void loadProperties(Properties props) {
-        databaseName = props.getProperty("db.name");
-        dbUsername = props.getProperty("db.user");
-        dbPassword = props.getProperty("db.password");
-
-        var host = props.getProperty("db.host");
-        var port = Integer.parseInt(props.getProperty("db.port"));
-        connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
-    }
 }
