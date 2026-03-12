@@ -2,6 +2,8 @@ package service;
 
 import java.util.UUID;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
@@ -41,10 +43,12 @@ public class UserService {
                 throw new AlreadyExistsException("Already exists");
             }
 
+            String hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
+
             // Add userData
             UserData userData = new UserData(
                     registerRequest.username(),
-                    registerRequest.password(),
+                    hashedPassword,
                     registerRequest.email()
             );
             userDAO.addUser(userData);

@@ -24,8 +24,10 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void createGame(GameData gameData) throws DataAccessException {
+    public int createGame(GameData gameData) throws DataAccessException {
         gameDataDB.put(gameData.gameID(), gameData);
+        // change for sql implementation
+        return 0;
     }
 
     @Override

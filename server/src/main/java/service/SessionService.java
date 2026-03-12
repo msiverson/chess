@@ -2,6 +2,8 @@ package service;
 
 import java.util.UUID;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
@@ -40,8 +42,12 @@ public class SessionService {
             }
 
             // Verify password
-            if (!user.password().equals(loginRequest.password())) {
-                throw new UnauthorizedException("Invalid password");
+//            if (!user.password().equals(loginRequest.password())) {
+//                throw new UnauthorizedException("Invalid password");
+//            }
+
+            if (!BCrypt.checkpw(loginRequest.password(), user.password())) {
+                throw new UnauthorizedException("Incorrect password");
             }
 
             // Add authData

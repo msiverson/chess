@@ -44,7 +44,7 @@ public class DatabaseManager {
             """
         CREATE TABLE IF NOT EXISTS auth_tokens (
             auth_token VARCHAR(255) PRIMARY KEY,
-            username VARCHAR(50) NOT NULL
+            username VARCHAR(50) NOT NULL,
         
             FOREIGN KEY (username)
                 REFERENCES users(username)
