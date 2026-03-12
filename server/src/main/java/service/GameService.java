@@ -76,12 +76,11 @@ public class GameService {
             }
 
             // Get username from authData
-            int newGameID = gameIDCount++;
             ChessGame newGame = new ChessGame();
 
-            gameDAO.createGame(
+            int newGameID = gameDAO.createGame(
                 new GameData(
-                    newGameID,
+                    0,
                     null,
                     null,
                     createGameRequest.gameName(),
