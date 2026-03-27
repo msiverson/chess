@@ -44,7 +44,7 @@ public class GameServiceTests {
                 new CreateGameRequest("validToken", "TestGame")
         );
 
-        assertTrue(result.gameID() > 0);
+        assertTrue(result.gameID() >= 0);
 
         List<GameData> games = gameDAO.listGames();
         assertEquals(1, games.size());

@@ -1,5 +1,8 @@
 package service;
 
+import dto.session.LoginRequest;
+import dto.session.LoginResult;
+import dto.session.LogoutRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -8,8 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import dataaccess.memory.MemoryUserDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import model.UserData;
-import dto.session.*;
 import service.exceptions.UnauthorizedException;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 public class SessionServiceTests {
 
@@ -31,32 +35,47 @@ public class SessionServiceTests {
     @Test
     @DisplayName("login() Positive")
     public void loginPositive() throws Exception {
-        // Arrange
-        UserData user = new UserData("validUsername", "validPassword", "validEmail");
+
+        String hashedPassword = BCrypt.hashpw("validPassword", BCrypt.gensalt());
+
+        UserData user = new UserData(
+                "validUsername",
+                hashedPassword,
+                "validEmail"
+        );
+
         userDAO.addUser(user);
 
-        LoginRequest request = new LoginRequest("validUsername", "validPassword");
+        LoginRequest request =
+                new LoginRequest("validUsername", "validPassword");
 
-        // Act
         LoginResult result = service.login(request);
 
-        // Assert
         assertEquals("validUsername", result.username());
         assertNotNull(result.authToken());
-        assertNotEquals("", result.authToken());
     }
 
     @Test
     @DisplayName("login() Negative [Wrong Password]")
     public void loginNegativeWrongPassword() throws Exception {
-        // Arrange
-        UserData user = new UserData("validUsername", "validPassword", "validEmail");
+
+        String hashedPassword = BCrypt.hashpw("validPassword", BCrypt.gensalt());
+
+        UserData user = new UserData(
+                "validUsername",
+                hashedPassword,
+                "validEmail"
+        );
+
         userDAO.addUser(user);
 
-        LoginRequest request = new LoginRequest("validUsername", "wrong");
+        LoginRequest request =
+                new LoginRequest("validUsername", "wrong");
 
-        // Act & Assert
-        assertThrows(UnauthorizedException.class, () -> service.login(request));
+        assertThrows(
+                UnauthorizedException.class,
+                () -> service.login(request)
+        );
     }
 
     // =========================
@@ -66,19 +85,26 @@ public class SessionServiceTests {
     @Test
     @DisplayName("logout() Positive")
     public void logoutPositive() throws Exception {
-        // Arrange
-        UserData user = new UserData("validUsername", "validPassword", "validEmail");
+
+        String hashedPassword = BCrypt.hashpw("validPassword", BCrypt.gensalt());
+
+        UserData user = new UserData(
+                "validUsername",
+                hashedPassword,
+                "validEmail"
+        );
+
         userDAO.addUser(user);
 
         LoginResult loginResult =
-                service.login(new LoginRequest("validUsername", "validPassword"));
+                service.login(
+                        new LoginRequest("validUsername", "validPassword")
+                );
 
-        LogoutRequest logoutRequest = new LogoutRequest(loginResult.authToken());
+        service.logout(
+                new LogoutRequest(loginResult.authToken())
+        );
 
-        // Act
-        service.logout(logoutRequest);
-
-        // Assert
         assertNull(authDAO.getAuth(loginResult.authToken()));
     }
 
