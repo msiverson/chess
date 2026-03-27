@@ -124,7 +124,6 @@ public class PostLoginState {
             return POST_LOGIN;
         }
 
-        // Check for valid index input
         int index;
         GameInfo game;
         while (true) {
@@ -138,39 +137,23 @@ public class PostLoginState {
             }
 
             if (index < 1 || index > gamesList.size()) {
-                System.out.println(
-                        ui.error("game number out of range")
-                );
+                System.out.println(ui.error("game number out of range"));
                 continue;
             }
 
-            // Get selected game
             game = gamesList.get(index - 1);
-
-            // Check if client is observing game
-            if (isObserving) {
-                context.setObserving(true);
-                context.setGameId(game.gameID());
-                return GAME_SESSION;
-            }
-            // Check if client has joined a game before
-            else if (context.getTeamColor() == null) {
-                break;
-            }
-            // Check if client is rejoining a game
-            else if (context.getGameId() != null && game.gameID() == context.getGameId()) {
-                    context.setObserving(false);
-                    context.setGameId(game.gameID());
-                    return GAME_SESSION;
-            }
-            // Can't join a game if a part of another game and not observing
-            else {
-                System.out.println(ui.warning("Can't join a game if a part of another game and not observing"));
-                return POST_LOGIN;
-            }
+            break;
         }
 
-        // Check for valid player color input
+        if (isObserving) {
+            context.setObserving(true);
+            context.setGameId(game.gameID());
+            context.setTeamColor(ChessGame.TeamColor.WHITE);
+
+            System.out.println(ui.success("Observing game"));
+            return GAME_SESSION;
+        }
+
         ChessGame.TeamColor teamColor;
         while (true) {
             System.out.print(ui.prompt("color (white/black): "));
@@ -184,22 +167,38 @@ public class PostLoginState {
                 continue;
             }
 
-            if (teamColor == ChessGame.TeamColor.WHITE && game.whiteUsername() != null ||
-                    teamColor == ChessGame.TeamColor.BLACK && game.blackUsername() != null) {
-                System.out.println(ui.error("Color already taken. Choose another"));
+            boolean whiteTaken = game.whiteUsername() != null;
+            boolean blackTaken = game.blackUsername() != null;
+
+            if (teamColor == ChessGame.TeamColor.WHITE && whiteTaken) {
+                if (!blackTaken) {
+                    System.out.println(ui.error("White is already taken. Choose black."));
+                } else {
+                    System.out.println(ui.error("Both colors are already taken."));
+                    return POST_LOGIN;
+                }
                 continue;
             }
+
+            if (teamColor == ChessGame.TeamColor.BLACK && blackTaken) {
+                if (!whiteTaken) {
+                    System.out.println(ui.error("Black is already taken. Choose white."));
+                } else {
+                    System.out.println(ui.error("Both colors are already taken."));
+                    return POST_LOGIN;
+                }
+                continue;
+            }
+
             break;
         }
 
-        // Joining game for first time
         server.joinGame(new JoinGameRequest(
                 context.getAuthToken(),
                 teamColor.name(),
                 game.gameID())
         );
 
-        // Set client context fields for this game
         context.setObserving(false);
         context.setGameId(game.gameID());
         context.setTeamColor(teamColor);
