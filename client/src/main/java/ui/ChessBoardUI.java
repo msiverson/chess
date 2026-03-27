@@ -21,7 +21,6 @@ public class ChessBoardUI {
             ChessMove lastMove,
             boolean isObserving
     ) {
-        ui.clearScreen();
 
         System.out.println(ui.title("CHESS"));
         System.out.println(ui.info("Perspective: " + perspective));

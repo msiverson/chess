@@ -46,14 +46,12 @@ public class PostLoginState {
                 case "play game" -> joinGame(context, false);
                 case "observe game" -> joinGame(context, true);
                 default -> {
-                    ui.clearScreen();
                     System.out.println(ui.warning("Unknown command. Type help to list available commands"));
 
                     yield POST_LOGIN;
                 }
             };
         } catch (Exception e) {
-            ui.clearScreen();
             System.out.println(e.getMessage());
 
             return POST_LOGIN;
@@ -61,7 +59,6 @@ public class PostLoginState {
     }
 
     private ClientState help() {
-        ui.clearScreen();
         System.out.println(ui.info("""
                         Commands:
                         * help (lists available commands)
@@ -88,9 +85,7 @@ public class PostLoginState {
 
         String name = scanner.nextLine();
 
-        CreateGameResult result = server.createGame(new CreateGameRequest(context.getAuthToken(), name));
-
-        //context.setGameId(result.gameID());
+        server.createGame(new CreateGameRequest(context.getAuthToken(), name));
 
         System.out.println(ui.success("Created game: " + name));
 

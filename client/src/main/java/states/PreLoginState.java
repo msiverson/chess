@@ -43,20 +43,17 @@ public class PreLoginState {
                 case "register" -> register(context);
                 case "quit" -> QUIT;
                 default -> {
-                    ui.clearScreen();
                     System.out.println(ui.warning("Unknown command. Type help to list available commands"));
                     yield PRE_LOGIN;
                 }
             };
         } catch (Exception e) {
-            ui.clearScreen();
             System.out.println(ui.error(e.getMessage()));
             return PRE_LOGIN;
         }
     }
 
     private ClientState help() {
-        ui.clearScreen();
         System.out.println(ui.info(
                         """
                                 Commands:
@@ -80,7 +77,6 @@ public class PreLoginState {
 
         LoginResult result = server.login(new LoginRequest(username, password));
 
-        ui.clearScreen();
         System.out.println(ui.success("Welcome back " + result.username()));
 
         context.setAuthToken(result.authToken());
@@ -111,7 +107,6 @@ public class PreLoginState {
 
             context.setAuthToken(result.authToken());
 
-            ui.clearScreen();
             System.out.println(ui.success("New user " + result.username() + " registered and logged in"));
 
             return ClientState.POST_LOGIN;

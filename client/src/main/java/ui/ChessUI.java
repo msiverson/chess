@@ -26,12 +26,6 @@ public class ChessUI {
     private final FullColorEscapeSequences.RGBValue whitePieceColor = new FullColorEscapeSequences.RGBValue(255, 255, 255);
     private final FullColorEscapeSequences.RGBValue blackPieceColor = new FullColorEscapeSequences.RGBValue(30, 30, 30);
 
-    // Utility Functions
-    public void clearScreen() {
-        System.out.println(ERASE_SCREEN);
-        System.out.flush();
-    }
-
     // Text Style Helpers
     public String title(String text) {
         return BOLD + setTextRGB(titleGold) + text + RESET;
