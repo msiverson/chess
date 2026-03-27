@@ -94,7 +94,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void registerNegative_duplicateUser() throws Exception {
+    void registerNegativeDuplicateUser() throws Exception {
 
         facade.register(
                 new RegisterRequest(
@@ -136,7 +136,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void loginNegative_wrongPassword() {
+    void loginNegativeWrongPassword() {
 
         assertThrows(RuntimeException.class, () ->
                 facade.login(
@@ -161,7 +161,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void logoutNegative_invalidToken() {
+    void logoutNegativeInvalidToken() {
 
         assertThrows(RuntimeException.class, () ->
                 facade.logout("invalidToken")
@@ -188,7 +188,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void createGameNegative_invalidAuthToken() {
+    void createGameNegativeInvalidAuthToken() {
 
         assertThrows(RuntimeException.class, () ->
                 facade.createGame(
@@ -224,7 +224,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void listGamesNegative_invalidToken() {
+    void listGamesNegativeInvalidToken() {
 
         assertThrows(RuntimeException.class, () ->
                 facade.listGames(
@@ -260,7 +260,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void joinGameNegative_invalidGameID() {
+    void joinGameNegativeInvalidGameID() {
 
         assertThrows(RuntimeException.class, () ->
                 facade.joinGame(

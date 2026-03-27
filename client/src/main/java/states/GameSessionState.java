@@ -13,7 +13,7 @@ import static client.ClientState.POST_LOGIN;
 
 public class GameSessionState {
 
-    private final ServerFacade server; // TODO: Used phase 6
+    private final ServerFacade server;
     private final Scanner scanner;
     private final ChessUI ui = new ChessUI();
     private final ChessBoardUI boardUI = new ChessBoardUI();
@@ -26,7 +26,7 @@ public class GameSessionState {
     }
 
     public ClientState run(ClientContext context) {
-        ChessGame chessGame = new ChessGame(); // TODO: To be removed and change in phase 6
+        ChessGame chessGame = new ChessGame();
         boardUI.draw(chessGame, context.getTeamColor(), null, null, context.getObserving());
 
         boolean inGame = true;
