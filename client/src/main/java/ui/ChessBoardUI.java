@@ -69,7 +69,7 @@ public class ChessBoardUI {
 
                 ChessPosition pos = new ChessPosition(row, col);
 
-                boolean light = (row + col) % 2 == 0;
+                boolean light = (row + col) % 2 != 0;
                 boolean highlight = highlightSquares.contains(pos);
                 boolean last = isLastMoveSquare(pos, lastMove);
 

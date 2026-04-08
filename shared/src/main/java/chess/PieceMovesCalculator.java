@@ -96,7 +96,7 @@ class PawnMoveCheck {
             ChessPosition piecePosition,
             ChessPosition positionToCheck) {
 
-        // 1️⃣ Bounds check first
+        // Bounds check first
         if (!isInBounds(positionToCheck)) {
             return false;
         }
@@ -107,7 +107,7 @@ class PawnMoveCheck {
         boolean sameColumn = piecePosition.getColumn() == positionToCheck.getColumn();
         boolean isPromotionRow = positionToCheck.getRow() == 1 || positionToCheck.getRow() == 8;
 
-        // 2️⃣ Forward move (no capture)
+        // Forward move (no capture)
         if (sameColumn) {
             if (targetPiece != null) {
                 return false;
@@ -115,7 +115,7 @@ class PawnMoveCheck {
 
             return addPawnMove(moves, piecePosition, positionToCheck, isPromotionRow);
         }
-        // 3️⃣ Diagonal capture
+        // Diagonal capture
 
         if (targetPiece == null) {
             return false;

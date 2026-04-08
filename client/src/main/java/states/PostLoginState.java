@@ -126,25 +126,28 @@ public class PostLoginState {
 
         int index;
         GameInfo game;
-        while (true) {
-            System.out.print(ui.prompt("game number: "));
+        //while (true) {
+        System.out.print(ui.prompt("game number: "));
 
-            try {
-                index = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println(ui.error("invalid number"));
-                continue;
-            }
-
-            if (index < 1 || index > gamesList.size()) {
-                System.out.println(ui.error("game number out of range"));
-                continue;
-            }
-
-            game = gamesList.get(index - 1);
-            break;
+        try {
+            index = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println(ui.error("invalid number"));
+            //continue;
+            return POST_LOGIN;
         }
 
+        if (index < 1 || index > gamesList.size()) {
+            System.out.println(ui.error("game number out of range"));
+            //continue;
+            return POST_LOGIN;
+        }
+
+        game = gamesList.get(index - 1);
+        //break;
+        //}
+
+        // Check if observing
         if (isObserving) {
             context.setObserving(true);
             context.setGameId(game.gameID());
@@ -155,42 +158,39 @@ public class PostLoginState {
         }
 
         ChessGame.TeamColor teamColor;
-        while (true) {
-            System.out.print(ui.prompt("color (white/black): "));
 
-            String colorInput = scanner.nextLine().trim().toUpperCase();
+        System.out.print(ui.prompt("color (white/black): "));
 
-            try {
-                teamColor = ChessGame.TeamColor.valueOf(colorInput);
-            } catch (IllegalArgumentException e) {
-                System.out.println(ui.error("Color must be white or black"));
-                continue;
+        String colorInput = scanner.nextLine().trim().toUpperCase();
+
+        try {
+            teamColor = ChessGame.TeamColor.valueOf(colorInput);
+        } catch (IllegalArgumentException e) {
+            System.out.println(ui.error("Color must be white or black"));
+            return POST_LOGIN;
+        }
+
+        boolean whiteTaken = game.whiteUsername() != null;
+        boolean blackTaken = game.blackUsername() != null;
+
+        if (teamColor == ChessGame.TeamColor.WHITE && whiteTaken) {
+            if (!blackTaken) {
+                System.out.println(ui.error("White is already taken. Choose black."));
+            } else {
+                System.out.println(ui.error("Both colors are already taken."));
+                return POST_LOGIN;
             }
+            return POST_LOGIN;
+        }
 
-            boolean whiteTaken = game.whiteUsername() != null;
-            boolean blackTaken = game.blackUsername() != null;
-
-            if (teamColor == ChessGame.TeamColor.WHITE && whiteTaken) {
-                if (!blackTaken) {
-                    System.out.println(ui.error("White is already taken. Choose black."));
-                } else {
-                    System.out.println(ui.error("Both colors are already taken."));
-                    return POST_LOGIN;
-                }
-                continue;
+        if (teamColor == ChessGame.TeamColor.BLACK && blackTaken) {
+            if (!whiteTaken) {
+                System.out.println(ui.error("Black is already taken. Choose white."));
+            } else {
+                System.out.println(ui.error("Both colors are already taken."));
+                return POST_LOGIN;
             }
-
-            if (teamColor == ChessGame.TeamColor.BLACK && blackTaken) {
-                if (!whiteTaken) {
-                    System.out.println(ui.error("Black is already taken. Choose white."));
-                } else {
-                    System.out.println(ui.error("Both colors are already taken."));
-                    return POST_LOGIN;
-                }
-                continue;
-            }
-
-            break;
+            return POST_LOGIN;
         }
 
         server.joinGame(new JoinGameRequest(
