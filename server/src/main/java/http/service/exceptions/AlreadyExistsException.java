@@ -1,4 +1,4 @@
-package service.exceptions;
+package http.service.exceptions;
 
 public class AlreadyExistsException extends RuntimeException {
     public AlreadyExistsException(String message) {

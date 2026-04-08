@@ -26,7 +26,7 @@ public class GameSessionState {
     }
 
     public ClientState run(ClientContext context) {
-        ChessGame chessGame = new ChessGame();
+        ChessGame chessGame = context.getCurrentGame();
         boardUI.draw(chessGame, context.getTeamColor(), null, null, context.getObserving());
 
         boolean inGame = true;
@@ -35,7 +35,8 @@ public class GameSessionState {
             String command = scanner.nextLine();
             if (!context.getObserving()) {
                 switch (command) {
-                    case "move", "highlight" -> System.out.println(ui.warning("Functionality not implemented"));
+                    case "move" -> //TODO
+                    case "highlight" -> //TODO
                     case "leave" -> inGame = false;
                     case "redraw" -> boardUI.draw(
                             chessGame,
@@ -50,17 +51,17 @@ public class GameSessionState {
             } else {
                 switch (command) {
                     case "leave" -> inGame = false;
-                    case "redraw" -> boardUI.draw(chessGame,
-                            context.getTeamColor(),
-                            null,
-                            null,
-                            context.getObserving()
-                    );
+                    // redrawing will happen automatically
+//                    case "redraw" -> boardUI.draw(chessGame,
+//                            context.getTeamColor(),
+//                            null,
+//                            null,
+//                            context.getObserving()
+//                    );
                     default -> System.out.println(ui.warning("unknown command")
                     );
                 }
             }
-
         }
 
         return POST_LOGIN;

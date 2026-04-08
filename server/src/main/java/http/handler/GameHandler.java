@@ -1,4 +1,4 @@
-package handler;
+package http.handler;
 
 import java.util.Map;
 
@@ -13,9 +13,9 @@ import dto.game.JoinGameRequest;
 import dto.game.ListGamesRequest;
 import dto.game.ListGamesResult;
 
-import service.GameService;
-import service.exceptions.AlreadyTakenException;
-import service.exceptions.UnauthorizedException;
+import http.service.GameService;
+import http.service.exceptions.AlreadyTakenException;
+import http.service.exceptions.UnauthorizedException;
 
 public class GameHandler {
 

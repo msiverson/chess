@@ -12,15 +12,15 @@ import dataaccess.sql.SQLUserDAO;
 import static dataaccess.sql.DatabaseManager.configureDatabase;
 import static dataaccess.sql.DatabaseManager.createDatabase;
 
-import handler.DBHandler;
-import handler.GameHandler;
-import handler.SessionHandler;
-import handler.UserHandler;
+import http.handler.DBHandler;
+import http.handler.GameHandler;
+import http.handler.SessionHandler;
+import http.handler.UserHandler;
 
-import service.DBService;
-import service.GameService;
-import service.SessionService;
-import service.UserService;
+import http.service.DBService;
+import http.service.GameService;
+import http.service.SessionService;
+import http.service.UserService;
 
 public class Server {
 
@@ -63,6 +63,11 @@ public class Server {
         javalin.get("/game", gameHandler::listGames);
         javalin.post("/game", gameHandler::createGame);
         javalin.put("/game", gameHandler::joinGame);
+
+        // WebSocket Endpoint
+        // GameplayService gameplayService = new GameplayService(authDAO, gameDAO);
+        // GameplayHandler gameplayHandler = new GameplayHandler(gameplayService);
+
     }
 
     public int run(int desiredPort) {

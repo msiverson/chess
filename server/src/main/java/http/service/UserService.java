@@ -1,4 +1,4 @@
-package service;
+package http.service;
 
 import java.util.UUID;
 
@@ -14,8 +14,8 @@ import dto.user.RegisterResult;
 import model.AuthData;
 import model.UserData;
 
-import service.exceptions.AlreadyExistsException;
-import service.exceptions.ServiceException;
+import http.service.exceptions.AlreadyExistsException;
+import http.service.exceptions.ServiceException;
 
 public class UserService {
 

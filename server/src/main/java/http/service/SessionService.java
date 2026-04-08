@@ -1,4 +1,4 @@
-package service;
+package http.service;
 
 import java.util.UUID;
 
@@ -15,8 +15,8 @@ import dto.session.LogoutRequest;
 import model.AuthData;
 import model.UserData;
 
-import service.exceptions.ServiceException;
-import service.exceptions.UnauthorizedException;
+import http.service.exceptions.ServiceException;
+import http.service.exceptions.UnauthorizedException;
 
 public class SessionService {
     private final UserDAO userDAO;

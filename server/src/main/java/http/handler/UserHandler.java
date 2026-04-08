@@ -1,4 +1,4 @@
-package handler;
+package http.handler;
 
 import java.util.Map;
 
@@ -8,9 +8,9 @@ import io.javalin.http.Context;
 import dto.user.RegisterRequest;
 import dto.user.RegisterResult;
 
-import service.UserService;
-import service.exceptions.AlreadyExistsException;
-import service.exceptions.ServiceException;
+import http.service.UserService;
+import http.service.exceptions.AlreadyExistsException;
+import http.service.exceptions.ServiceException;
 
 public class UserHandler {
 

@@ -151,4 +151,8 @@ public class ServerFacade {
     private static class ErrorResponse {
         String message;
     }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
 }

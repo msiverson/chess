@@ -1,5 +1,6 @@
 package service;
 
+import http.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +12,7 @@ import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.memory.MemoryUserDAO;
 import dto.user.RegisterRequest;
 import dto.user.RegisterResult;
-import service.exceptions.AlreadyExistsException;
+import http.service.exceptions.AlreadyExistsException;
 
 public class UserServiceTests {
 

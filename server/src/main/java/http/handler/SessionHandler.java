@@ -1,4 +1,4 @@
-package handler;
+package http.handler;
 
 import java.util.Map;
 
@@ -9,9 +9,9 @@ import dto.session.LoginRequest;
 import dto.session.LoginResult;
 import dto.session.LogoutRequest;
 
-import service.SessionService;
-import service.exceptions.ServiceException;
-import service.exceptions.UnauthorizedException;
+import http.service.SessionService;
+import http.service.exceptions.ServiceException;
+import http.service.exceptions.UnauthorizedException;
 
 public class SessionHandler {
 

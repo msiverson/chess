@@ -1,4 +1,4 @@
-package service.exceptions;
+package http.service.exceptions;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(String message) {

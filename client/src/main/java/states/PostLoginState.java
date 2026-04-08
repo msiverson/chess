@@ -7,9 +7,14 @@ import java.util.Scanner;
 import chess.ChessGame;
 import client.ClientContext;
 import client.ClientState;
+import client.GameWebSocketFacade;
 import client.ServerFacade;
 import dto.game.*;
 import ui.ChessUI;
+import websocket.commands.ConnectCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationsMessage;
 
 import static client.ClientState.*;
 
@@ -114,8 +119,6 @@ public class PostLoginState {
     }
 
     private ClientState joinGame(ClientContext context, boolean isObserving) throws Exception {
-        context.setObserving(isObserving);
-
         ListGamesResult listResult = server.listGames(new ListGamesRequest(context.getAuthToken()));
         gamesList = listResult.games();
 
@@ -126,32 +129,29 @@ public class PostLoginState {
 
         int index;
         GameInfo game;
-        //while (true) {
         System.out.print(ui.prompt("game number: "));
 
         try {
             index = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
             System.out.println(ui.error("invalid number"));
-            //continue;
             return POST_LOGIN;
         }
 
         if (index < 1 || index > gamesList.size()) {
             System.out.println(ui.error("game number out of range"));
-            //continue;
             return POST_LOGIN;
         }
 
         game = gamesList.get(index - 1);
-        //break;
-        //}
 
         // Check if observing
         if (isObserving) {
             context.setObserving(true);
             context.setGameId(game.gameID());
             context.setTeamColor(ChessGame.TeamColor.WHITE);
+
+            openGameSocket(context);
 
             System.out.println(ui.success("Observing game"));
             return GAME_SESSION;
@@ -203,8 +203,40 @@ public class PostLoginState {
         context.setGameId(game.gameID());
         context.setTeamColor(teamColor);
 
+        openGameSocket(context);
+
         System.out.println(ui.success("Joined game"));
 
         return GAME_SESSION;
+    }
+
+    private GameWebSocketFacade makeGameSocket(ClientContext context) {
+        return new GameWebSocketFacade(new GameWebSocketFacade.NotificationHandler() {
+            @Override
+            public void onLoadGame(LoadGameMessage message) {
+                context.setCurrentGame(message.getGame());
+            }
+
+            @Override
+            public void onNotification(NotificationsMessage message) {
+                System.out.println(ui.info(message.getNotificationMessage()));
+            }
+
+            @Override
+            public void onError(ErrorMessage message) {
+                System.out.println(ui.error(message.getErrorMessage()));
+            }
+        });
+    }
+
+    private void openGameSocket(ClientContext context) {
+        GameWebSocketFacade socket = makeGameSocket(context);
+        context.setGameSocket(socket);
+
+        socket.connect(server.getServerUrl());
+        socket.sendCommand(new ConnectCommand(
+                context.getAuthToken(),
+                context.getGameId()
+        ));
     }
 }

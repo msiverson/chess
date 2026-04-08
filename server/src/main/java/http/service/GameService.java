@@ -1,4 +1,4 @@
-package service;
+package http.service;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ import dto.game.ListGamesResult;
 import model.AuthData;
 import model.GameData;
 
-import service.exceptions.AlreadyTakenException;
-import service.exceptions.ServiceException;
-import service.exceptions.UnauthorizedException;
+import http.service.exceptions.AlreadyTakenException;
+import http.service.exceptions.ServiceException;
+import http.service.exceptions.UnauthorizedException;
 
 public class GameService {
 

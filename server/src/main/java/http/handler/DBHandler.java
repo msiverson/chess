@@ -1,11 +1,11 @@
-package handler;
+package http.handler;
 
 import java.util.Map;
 
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 
-import service.DBService;
+import http.service.DBService;
 
 public class DBHandler {
 

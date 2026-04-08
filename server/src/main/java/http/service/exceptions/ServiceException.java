@@ -1,4 +1,4 @@
-package service.exceptions;
+package http.service.exceptions;
 
 public class ServiceException extends RuntimeException {
     public ServiceException(String message) {

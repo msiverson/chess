@@ -1,11 +1,11 @@
-package service;
+package http.service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 
-import service.exceptions.ServiceException;
+import http.service.exceptions.ServiceException;
 
 public class DBService {
 

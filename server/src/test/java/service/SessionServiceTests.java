@@ -3,6 +3,7 @@ package service;
 import dto.session.LoginRequest;
 import dto.session.LoginResult;
 import dto.session.LogoutRequest;
+import http.service.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import dataaccess.memory.MemoryUserDAO;
 import dataaccess.memory.MemoryAuthDAO;
 import model.UserData;
-import service.exceptions.UnauthorizedException;
+import http.service.exceptions.UnauthorizedException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
