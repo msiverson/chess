@@ -3,7 +3,7 @@ package states;
 import chess.*;
 import client.ClientContext;
 import client.ClientState;
-import Facades.ServerFacade;
+import facades.ServerFacade;
 import ui.ChessBoardUI;
 import ui.ChessUI;
 import websocket.commands.LeaveCommand;

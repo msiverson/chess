@@ -1,6 +1,6 @@
 package client;
 
-import Facades.ServerFacade;
+import facades.ServerFacade;
 import org.junit.jupiter.api.*;
 
 import server.Server;

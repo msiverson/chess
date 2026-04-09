@@ -183,22 +183,13 @@ public class ChessGame {
 
         TeamColor enemyColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        // See whether any enemy piece attacks the king square
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(pos);
 
-                if (piece != null && piece.getTeamColor() == enemyColor) {
-                    Collection<ChessMove> enemyMoves = piece.pieceMoves(gameBoard, pos);
-
-                    if (enemyMoves != null) {
-                        for (ChessMove move : enemyMoves) {
-                            if (move.getEndPosition().equals(kingPosition)) {
-                                return true;
-                            }
-                        }
-                    }
+                if (isEnemyAttackingKing(piece, enemyColor, pos, kingPosition)) {
+                    return true;
                 }
             }
         }
@@ -206,46 +197,24 @@ public class ChessGame {
         return false;
     }
 
-    private boolean checkFromDirection(
-            ChessPosition kingPosition,
-            int[][] directions,
-            int maxSteps,
-            ChessPiece.PieceType[] pieceTypes) {
+    private boolean isEnemyAttackingKing(
+            ChessPiece piece,
+            TeamColor enemyColor,
+            ChessPosition piecePosition,
+            ChessPosition kingPosition) {
 
-        ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
-        ChessGame.TeamColor kingColor = kingPiece.getTeamColor();
+        if (piece == null || piece.getTeamColor() != enemyColor) {
+            return false;
+        }
 
-        for (int[] d : directions) {
-            int dRow = d[0];
-            int dCol = d[1];
+        Collection<ChessMove> enemyMoves = piece.pieceMoves(gameBoard, piecePosition);
+        if (enemyMoves == null) {
+            return false;
+        }
 
-            for (int step = 1; step <= maxSteps; step++) {
-
-                ChessPosition currPosition = new ChessPosition(
-                        kingPosition.getRow() + dRow * step,
-                        kingPosition.getColumn() + dCol * step
-                );
-
-                if (!isInBounds(currPosition)) {
-                    break;
-                }
-
-                ChessPiece piece = gameBoard.getPiece(currPosition);
-                if (piece == null) {
-                    continue;
-                }
-
-                if (piece.getTeamColor() == kingColor) {
-                    break;
-                }
-
-                ChessPiece.PieceType type = piece.getPieceType();
-
-                if (isThreat(type, pieceTypes, kingColor, dRow, step)) {
-                    return true;
-                }
-
-                break;
+        for (ChessMove move : enemyMoves) {
+            if (move.getEndPosition().equals(kingPosition)) {
+                return true;
             }
         }
 

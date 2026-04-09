@@ -1,4 +1,4 @@
-package Facades;
+package facades;
 
 import java.io.IOException;
 import java.net.URI;

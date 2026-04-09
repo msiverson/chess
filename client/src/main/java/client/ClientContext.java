@@ -1,6 +1,6 @@
 package client;
 
-import Facades.GameWebSocketFacade;
+import facades.GameWebSocketFacade;
 import chess.ChessGame;
 
 public class ClientContext {

@@ -2,7 +2,7 @@ package client;
 
 import java.util.Scanner;
 
-import Facades.ServerFacade;
+import facades.ServerFacade;
 import states.*;
 
 public class Client {
