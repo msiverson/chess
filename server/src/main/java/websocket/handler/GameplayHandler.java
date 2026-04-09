@@ -21,11 +21,9 @@ public class GameplayHandler {
     }
 
     public void onConnect(WsContext ctx) {
-        System.out.println("SERVER WS OPEN: " + ctx.sessionId());
     }
 
     public void onMessage(WsContext ctx, String json) {
-        System.out.println("server received websocket message: " + json);
         try {
             UserGameCommand base = gson.fromJson(json, UserGameCommand.class);
 
@@ -41,13 +39,10 @@ public class GameplayHandler {
     }
 
     public void onClose(WsContext ctx) {
-        System.out.println("SERVER WS CLOSED: " + ctx.sessionId());
         connectionManager.remove(ctx.sessionId());
     }
 
     private void handleConnect(WsContext ctx, ConnectCommand cmd) {
-        System.out.println("handleConnect called for game " + cmd.getGameID());
-
         GameData gameData = gameplayService.connect(cmd.getAuthToken(), cmd.getGameID());
         AuthData authData = gameplayService.getAuth(cmd.getAuthToken());
 
@@ -60,18 +55,18 @@ public class GameplayHandler {
 
         connectionManager.add(ctx.sessionId(), connection);
 
-        System.out.println("sending LoadGameMessage (connect)");
         connectionManager.sendToOne(ctx, new LoadGameMessage(gameData.game()));
 
+        String role = determineRole(authData.username(), gameData);
         connectionManager.broadcastToGameExcept(
                 cmd.getGameID(),
                 ctx.sessionId(),
-                new NotificationMessage(authData.username() + " connected")
+                new NotificationMessage(authData.username() + " connected as " + role)
         );
     }
 
     private void handleMakeMove(WsContext ctx, MakeMoveCommand cmd) {
-        GameData updatedGame = gameplayService.makeMove(
+        GameplayService.MoveResult result = gameplayService.makeMove(
                 cmd.getAuthToken(),
                 cmd.getGameID(),
                 cmd.getMove()
@@ -81,13 +76,26 @@ public class GameplayHandler {
 
         connectionManager.broadcastToGame(
                 cmd.getGameID(),
-                new LoadGameMessage(updatedGame.game())
+                new LoadGameMessage(result.gameData().game())
         );
 
-        connectionManager.broadcastToGame(
+        connectionManager.broadcastToGameExcept(
                 cmd.getGameID(),
+                ctx.sessionId(),
                 new NotificationMessage(authData.username() + " moved " + cmd.getMove())
         );
+
+        if (result.checkmate()) {
+            connectionManager.broadcastToGame(
+                    cmd.getGameID(),
+                    new NotificationMessage("checkmate")
+            );
+        } else if (result.stalemate()) {
+            connectionManager.broadcastToGame(
+                    cmd.getGameID(),
+                    new NotificationMessage("stalemate")
+            );
+        }
     }
 
     private void handleLeave(WsContext ctx, LeaveCommand cmd) {
@@ -110,5 +118,15 @@ public class GameplayHandler {
                 cmd.getGameID(),
                 new NotificationMessage(authData.username() + " resigned")
         );
+    }
+
+    private String determineRole(String username, GameData gameData) {
+        if (username.equals(gameData.whiteUsername())) {
+            return "WHITE";
+        }
+        if (username.equals(gameData.blackUsername())) {
+            return "BLACK";
+        }
+        return "OBSERVER";
     }
 }

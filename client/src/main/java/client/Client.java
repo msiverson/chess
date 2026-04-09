@@ -18,9 +18,6 @@ public class Client {
         ServerFacade server = new ServerFacade(serverUrl);
         Scanner scanner = new Scanner(System.in);
 
-//        preLoginState = new PreLoginState(server, scanner);
-//        postLoginState = new PostLoginState(server, scanner);
-//        gameSessionState = new GameSessionState(server, scanner);
         gameSessionState = new GameSessionState(server, scanner);
         preLoginState = new PreLoginState(server, scanner);
         postLoginState = new PostLoginState(server, scanner, gameSessionState);
