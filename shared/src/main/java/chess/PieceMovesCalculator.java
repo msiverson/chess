@@ -161,16 +161,24 @@ class PawnMoveCheck {
 class MoveCheck {
     static boolean moveChecker(
             Collection<ChessMove> moves, ChessBoard board, ChessPosition piecePosition, ChessPosition positionToCheck) {
+
         if ((positionToCheck.getColumn() <= 8 && positionToCheck.getColumn() >= 1) &&
                 (positionToCheck.getRow() <= 8 && positionToCheck.getRow() >= 1)) {
-            if (board.getPiece(positionToCheck) == null) {
-                ChessMove newMove = new ChessMove(piecePosition, positionToCheck, null);
-                return moves.add(newMove);
-            } else if (board.getPiece(piecePosition).getTeamColor() != board.getPiece(positionToCheck).getTeamColor()) {
-                ChessMove newMove = new ChessMove(piecePosition, positionToCheck, null);
-                return !moves.add(newMove);
+
+            ChessPiece targetPiece = board.getPiece(positionToCheck);
+            ChessPiece movingPiece = board.getPiece(piecePosition);
+
+            if (targetPiece == null) {
+                moves.add(new ChessMove(piecePosition, positionToCheck, null));
+                return true; // keep going
+            } else if (movingPiece.getTeamColor() != targetPiece.getTeamColor()) {
+                moves.add(new ChessMove(piecePosition, positionToCheck, null));
+                return false; // captured enemy, stop in this direction
+            } else {
+                return false; // own piece blocks
             }
         }
+
         return false;
     }
 }

@@ -159,17 +159,21 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = null;
 
-        FindKing:
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPosition currPosition = new ChessPosition(i, j);
-                if (gameBoard.getPiece(currPosition) != null) {
-                    if (gameBoard.getPiece(currPosition).getPieceType() == ChessPiece.PieceType.KING &&
-                            gameBoard.getPiece(currPosition).getTeamColor() == teamColor) {
-                        kingPosition = currPosition;
-                        break FindKing;
-                    }
+        // Find the king
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = gameBoard.getPiece(pos);
+
+                if (piece != null
+                        && piece.getTeamColor() == teamColor
+                        && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    kingPosition = pos;
+                    break;
                 }
+            }
+            if (kingPosition != null) {
+                break;
             }
         }
 
@@ -177,50 +181,28 @@ public class ChessGame {
             throw new IllegalStateException("King not found for team " + teamColor);
         }
 
-        int[][] cardinalDirections = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-        ChessPiece.PieceType[] cardinalTypes = {
-                ChessPiece.PieceType.KING,
-                ChessPiece.PieceType.QUEEN,
-                ChessPiece.PieceType.ROOK
-        };
-        int[][] blackDiagonalDirections = {{1, -1}, {1, 1}};
-        int[][] whiteDiagonalDirections = {{-1, -1}, {-1, 1}};
-        ChessPiece.PieceType[] diagonalTypes = {
-                ChessPiece.PieceType.KING,
-                ChessPiece.PieceType.QUEEN,
-                ChessPiece.PieceType.BISHOP,
-                ChessPiece.PieceType.PAWN
-        };
-        int[][] knightDirections = {{2, -1}, {2, 1}, {1, 2}, {-1, 2},
-                {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}};
-        ChessPiece.PieceType[] knightType = {
-                ChessPiece.PieceType.KNIGHT
-        };
+        TeamColor enemyColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        int[][][] directionSet = {
-                cardinalDirections,
-                blackDiagonalDirections,
-                whiteDiagonalDirections,
-                knightDirections
-        };
+        // See whether any enemy piece attacks the king square
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = gameBoard.getPiece(pos);
 
-        ChessPiece.PieceType[][] typeSet = {
-                cardinalTypes,
-                diagonalTypes,
-                diagonalTypes,
-                knightType
-        };
-        for (int i = 0; i < 4; i++) {
-            if (typeSet[i][0] == ChessPiece.PieceType.KNIGHT) {
-                if (checkFromDirection(kingPosition, directionSet[i], 1, typeSet[i])) {
-                    return true;
-                }
-            } else {
-                if (checkFromDirection(kingPosition, directionSet[i], 8, typeSet[i])) {
-                    return true;
+                if (piece != null && piece.getTeamColor() == enemyColor) {
+                    Collection<ChessMove> enemyMoves = piece.pieceMoves(gameBoard, pos);
+
+                    if (enemyMoves != null) {
+                        for (ChessMove move : enemyMoves) {
+                            if (move.getEndPosition().equals(kingPosition)) {
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
         }
+
         return false;
     }
 
