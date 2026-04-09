@@ -21,6 +21,9 @@ import http.service.DBService;
 import http.service.GameService;
 import http.service.SessionService;
 import http.service.UserService;
+import websocket.ConnectionManager;
+import websocket.handler.GameplayHandler;
+import websocket.service.GameplayService;
 
 public class Server {
 
@@ -65,8 +68,17 @@ public class Server {
         javalin.put("/game", gameHandler::joinGame);
 
         // WebSocket Endpoint
-        // GameplayService gameplayService = new GameplayService(authDAO, gameDAO);
-        // GameplayHandler gameplayHandler = new GameplayHandler(gameplayService);
+        GameplayService gameplayService = new GameplayService(authDAO, gameDAO);
+        ConnectionManager connectionManager = new ConnectionManager();
+        GameplayHandler gameplayHandler = new GameplayHandler(gameplayService, connectionManager);
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(ctx -> {
+                ctx.enableAutomaticPings();
+                gameplayHandler.onConnect(ctx);
+            });
+            ws.onMessage(ctx -> gameplayHandler.onMessage(ctx, ctx.message()));
+            ws.onClose(ctx -> gameplayHandler.onClose(ctx));
+        });
 
     }
 
