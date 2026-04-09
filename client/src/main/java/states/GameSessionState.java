@@ -25,6 +25,7 @@ public class GameSessionState {
     private final ChessBoardUI boardUI = new ChessBoardUI();
 
     private ChessMove lastMove = null;
+    private ChessMove pendingMove = null;
 
     public GameSessionState(ServerFacade server, Scanner scanner) {
         this.server = server;
@@ -150,7 +151,7 @@ public class GameSessionState {
         }
 
         ChessMove move = new ChessMove(from, to, promotion);
-        lastMove = move;
+        pendingMove = move;
 
         context.getGameSocket().sendCommand(
                 new MakeMoveCommand(
@@ -245,6 +246,17 @@ public class GameSessionState {
 
     public void updateGame(ClientContext context, ChessGame game) {
         context.setCurrentGame(game);
+
+        if (pendingMove != null) {
+            lastMove = pendingMove;
+            pendingMove = null;
+        }
+
+        System.out.println();
         drawBoard(context, null);
+    }
+
+    public void rejectPendingMove() {
+        pendingMove = null;
     }
 }

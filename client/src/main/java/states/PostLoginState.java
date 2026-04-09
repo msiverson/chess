@@ -247,6 +247,7 @@ public PostLoginState(ServerFacade server, Scanner scanner, GameSessionState gam
 
             @Override
             public void onError(ErrorMessage message) {
+                gameSessionState.rejectPendingMove();
                 System.out.println(ui.error(message.getErrorMessage()));
             }
         });
