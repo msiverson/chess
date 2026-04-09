@@ -7,8 +7,8 @@ import java.util.Scanner;
 import chess.ChessGame;
 import client.ClientContext;
 import client.ClientState;
-import Facades.GameWebSocketFacade;
-import Facades.ServerFacade;
+import facades.GameWebSocketFacade;
+import facades.ServerFacade;
 import dto.game.*;
 import ui.ChessUI;
 import websocket.commands.ConnectCommand;
@@ -30,10 +30,6 @@ public class PostLoginState {
     private boolean firstRun = true;
     private List<GameInfo> gamesList = new ArrayList<>();
 
-//    public PostLoginState(ServerFacade server, Scanner scanner) {
-//        this.server = server;
-//        this.scanner = scanner;
-//    }
 public PostLoginState(ServerFacade server, Scanner scanner, GameSessionState gameSessionState) {
     this.server = server;
     this.scanner = scanner;
