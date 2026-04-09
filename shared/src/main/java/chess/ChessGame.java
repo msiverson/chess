@@ -221,41 +221,6 @@ public class ChessGame {
         return false;
     }
 
-    private boolean isThreat(
-            ChessPiece.PieceType type,
-            ChessPiece.PieceType[] allowedTypes,
-            ChessGame.TeamColor kingColor,
-            int directionRow,
-            int step) {
-
-        for (ChessPiece.PieceType allowed : allowedTypes) {
-
-            if (type != allowed) {
-                continue;
-            }
-
-            if (allowed == ChessPiece.PieceType.PAWN && step == 1) {
-                if (kingColor == TeamColor.WHITE && directionRow > 0) {
-                    return true;
-                }
-                if (kingColor == TeamColor.BLACK && directionRow < 0) {
-                    return true;
-                }
-            }
-
-            if (allowed == ChessPiece.PieceType.KING && step == 1) {
-                return true;
-            }
-
-            if (allowed != ChessPiece.PieceType.PAWN &&
-                    allowed != ChessPiece.PieceType.KING) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Determines if the given team is in checkmate
      *
