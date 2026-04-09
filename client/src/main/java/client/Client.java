@@ -1,8 +1,9 @@
 package client;
 
-import states.*;
-
 import java.util.Scanner;
+
+import Facades.ServerFacade;
+import states.*;
 
 public class Client {
 
@@ -17,9 +18,12 @@ public class Client {
         ServerFacade server = new ServerFacade(serverUrl);
         Scanner scanner = new Scanner(System.in);
 
-        preLoginState = new PreLoginState(server, scanner);
-        postLoginState = new PostLoginState(server, scanner);
+//        preLoginState = new PreLoginState(server, scanner);
+//        postLoginState = new PostLoginState(server, scanner);
+//        gameSessionState = new GameSessionState(server, scanner);
         gameSessionState = new GameSessionState(server, scanner);
+        preLoginState = new PreLoginState(server, scanner);
+        postLoginState = new PostLoginState(server, scanner, gameSessionState);
 
         context = new ClientContext();
     }
@@ -32,7 +36,7 @@ public class Client {
                 case PRE_LOGIN -> state = preLoginState.run(context);
                 case POST_LOGIN -> state = postLoginState.run(context);
                 case GAME_SESSION -> state = gameSessionState.run(context);
-                case null, default -> System.out.println("Should not get here");
+                case null, default -> throw new RuntimeException("Error in client state machine");
             }
         }
     }

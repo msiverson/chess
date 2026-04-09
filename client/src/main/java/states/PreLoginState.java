@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import client.ClientContext;
 import client.ClientState;
-import client.ServerFacade;
+import Facades.ServerFacade;
 import dto.session.LoginRequest;
 import dto.session.LoginResult;
 import dto.user.RegisterRequest;

@@ -7,14 +7,14 @@ import java.util.Scanner;
 import chess.ChessGame;
 import client.ClientContext;
 import client.ClientState;
-import client.GameWebSocketFacade;
-import client.ServerFacade;
+import Facades.GameWebSocketFacade;
+import Facades.ServerFacade;
 import dto.game.*;
 import ui.ChessUI;
 import websocket.commands.ConnectCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationsMessage;
+import websocket.messages.NotificationMessage;
 
 import static client.ClientState.*;
 
@@ -25,13 +25,20 @@ public class PostLoginState {
     private final Scanner scanner;
     private final ChessUI ui = new ChessUI();
 
+    private final GameSessionState gameSessionState;
+
     private boolean firstRun = true;
     private List<GameInfo> gamesList = new ArrayList<>();
 
-    public PostLoginState(ServerFacade server, Scanner scanner) {
-        this.server = server;
-        this.scanner = scanner;
-    }
+//    public PostLoginState(ServerFacade server, Scanner scanner) {
+//        this.server = server;
+//        this.scanner = scanner;
+//    }
+public PostLoginState(ServerFacade server, Scanner scanner, GameSessionState gameSessionState) {
+    this.server = server;
+    this.scanner = scanner;
+    this.gameSessionState = gameSessionState;
+}
 
     public ClientState run(ClientContext context) {
         if (firstRun) {
@@ -127,23 +134,24 @@ public class PostLoginState {
             return POST_LOGIN;
         }
 
-        int index;
-        GameInfo game;
+        // Check for valid index input
         System.out.print(ui.prompt("game number: "));
+        int gameIndex;
 
         try {
-            index = Integer.parseInt(scanner.nextLine());
+            gameIndex = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
             System.out.println(ui.error("invalid number"));
             return POST_LOGIN;
         }
 
-        if (index < 1 || index > gamesList.size()) {
+        if (gameIndex < 1 || gameIndex > gamesList.size()) {
             System.out.println(ui.error("game number out of range"));
             return POST_LOGIN;
         }
 
-        game = gamesList.get(index - 1);
+        // Get game info from with valid game index
+        GameInfo game = gamesList.get(gameIndex - 1);
 
         // Check if observing
         if (isObserving) {
@@ -151,20 +159,19 @@ public class PostLoginState {
             context.setGameId(game.gameID());
             context.setTeamColor(ChessGame.TeamColor.WHITE);
 
+            // Open WebSocket connection to view game
             openGameSocket(context);
 
             System.out.println(ui.success("Observing game"));
             return GAME_SESSION;
         }
 
+        // Select team color
+        System.out.print(ui.prompt("color (white/black): "));
         ChessGame.TeamColor teamColor;
 
-        System.out.print(ui.prompt("color (white/black): "));
-
-        String colorInput = scanner.nextLine().trim().toUpperCase();
-
         try {
-            teamColor = ChessGame.TeamColor.valueOf(colorInput);
+            teamColor = ChessGame.TeamColor.valueOf(scanner.nextLine().trim().toUpperCase());
         } catch (IllegalArgumentException e) {
             System.out.println(ui.error("Color must be white or black"));
             return POST_LOGIN;
@@ -193,6 +200,7 @@ public class PostLoginState {
             return POST_LOGIN;
         }
 
+        // Make HTTP request to claim player slot
         server.joinGame(new JoinGameRequest(
                 context.getAuthToken(),
                 teamColor.name(),
@@ -203,6 +211,7 @@ public class PostLoginState {
         context.setGameId(game.gameID());
         context.setTeamColor(teamColor);
 
+        // Open WebSocket connection for gameplay
         openGameSocket(context);
 
         System.out.println(ui.success("Joined game"));
@@ -210,15 +219,29 @@ public class PostLoginState {
         return GAME_SESSION;
     }
 
+    private void openGameSocket(ClientContext context) throws Exception {
+        GameWebSocketFacade socket = makeGameSocket(context);
+        context.setGameSocket(socket);
+
+        socket.connect(server.getServerUrl());
+        System.out.println("after connect: " + socket.isConnected());
+
+        socket.sendCommand(new ConnectCommand(
+                context.getAuthToken(),
+                context.getGameId()
+        ));
+        System.out.println("after CONNECT cmd: " + socket.isConnected());
+    }
+
     private GameWebSocketFacade makeGameSocket(ClientContext context) {
         return new GameWebSocketFacade(new GameWebSocketFacade.NotificationHandler() {
             @Override
             public void onLoadGame(LoadGameMessage message) {
-                context.setCurrentGame(message.getGame());
+                gameSessionState.updateGame(context, message.getGame());
             }
 
             @Override
-            public void onNotification(NotificationsMessage message) {
+            public void onNotification(NotificationMessage message) {
                 System.out.println(ui.info(message.getNotificationMessage()));
             }
 
@@ -227,16 +250,5 @@ public class PostLoginState {
                 System.out.println(ui.error(message.getErrorMessage()));
             }
         });
-    }
-
-    private void openGameSocket(ClientContext context) {
-        GameWebSocketFacade socket = makeGameSocket(context);
-        context.setGameSocket(socket);
-
-        socket.connect(server.getServerUrl());
-        socket.sendCommand(new ConnectCommand(
-                context.getAuthToken(),
-                context.getGameId()
-        ));
     }
 }
