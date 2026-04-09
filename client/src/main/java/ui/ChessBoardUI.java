@@ -169,19 +169,26 @@ public class ChessBoardUI {
 
     private void drawControlsPlaying() {
         System.out.println(ui.divider(40));
-        System.out.println(ui.info("Commands:"));
-        System.out.println(ui.info("move") + "  make move (e2 e4)");
-        System.out.println(ui.info("highlight") + "  show legal moves");
-        System.out.println(ui.info("redraw") + "  refresh board");
-        System.out.println(ui.info("leave") + "  exit game");
+        System.out.print(ui.info("""
+                Commands:
+                * help
+                * redraw
+                * highlight <square>
+                * move <from> <to> [promotion]
+                * resign
+                * leave
+                """));
         System.out.println(ui.divider(40));
     }
 
     private void drawControlsObserving() {
-        System.out.println(ui.divider(40));
-        System.out.println(ui.info("Commands:"));
-        System.out.println(ui.info("redraw") + "  refresh board");
-        System.out.println(ui.info("leave") + "  exit game");
+        System.out.print(ui.info("""
+                Commands:
+                * help
+                * redraw
+                * highlight <square>
+                * leave
+                """));
         System.out.println(ui.divider(40));
     }
 }

@@ -67,7 +67,7 @@ public class Server {
         javalin.post("/game", gameHandler::createGame);
         javalin.put("/game", gameHandler::joinGame);
 
-        // WebSocket Endpoint
+        // WebSocket endpoint
         GameplayService gameplayService = new GameplayService(authDAO, gameDAO);
         ConnectionManager connectionManager = new ConnectionManager();
         GameplayHandler gameplayHandler = new GameplayHandler(gameplayService, connectionManager);
